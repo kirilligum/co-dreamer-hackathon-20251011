@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from loguru import logger
+import weave
 
 from ..core.config import PROJECT_ROOT
 
@@ -17,10 +18,12 @@ class KGScorer:
         with self.path.open("r", encoding="utf-8") as f:
             self.scores: dict[str, float] = json.load(f)
 
+    @weave.op()
     def rank_nodes(self, query: str, nodes: list[dict[str, Any]]) -> list[str]:
         logger.info(f"KGScorer.rank_nodes(query='{query}', nodes={len(nodes)})")
         return [n["node_id"] for n in sorted(nodes, key=lambda n: -self.scores.get(n["node_id"], 0.0))]
 
+    @weave.op()
     def update_from_trajectory(self, node_ids: list[str], reward: float) -> None:
         logger.info(f"KGScorer.update_from_trajectory(nodes={node_ids}, reward={reward:.3f})")
         for nid in node_ids:

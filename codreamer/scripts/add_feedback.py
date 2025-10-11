@@ -10,6 +10,7 @@ It also shows how to write to a separate external JSONL file.
 from datetime import datetime, timezone
 
 from loguru import logger
+import weave
 
 from ..core.config import FEEDBACK_WRITE_PATH
 from ..feedback.feedback import (
@@ -21,6 +22,7 @@ from ..feedback.feedback import (
 
 
 def main() -> None:
+    weave.init("pierg-org/codreamer")
     logger.remove()
     logger.add(lambda m: print(m, end=""), level="INFO")
 

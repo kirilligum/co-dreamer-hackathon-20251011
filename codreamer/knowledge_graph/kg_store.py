@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from loguru import logger
+import weave
 
 from ..core.config import PROJECT_ROOT
 
@@ -23,6 +24,7 @@ class KnowledgeGraphStore:
             n["id"]: [(e["target"], e.get("label", "")) for e in n.get("edges", [])] for n in data
         }
 
+    @weave.op()
     def expand(self, seed_nodes: list[str], goal: str, k: int) -> list[dict[str, Any]]:
         logger.info(f"KG.expand(seed={seed_nodes}, goal='{goal}', k={k})")
         seen: set[str] = set()
@@ -46,12 +48,14 @@ class KnowledgeGraphStore:
                         break
         return results[:k]
 
+    @weave.op()
     def get_node_facts(self, node_id: str) -> dict[str, Any]:
         logger.info(f"KG.get_node_facts(node_id={node_id})")
         if node_id not in self.nodes:
             return {}
         return {"node_id": node_id, "content": self.nodes[node_id]}
 
+    @weave.op()
     def subgraph(self, center: list[str], radius: int) -> tuple[list[dict[str, Any]], list[tuple[str, str, str]]]:
         logger.info(f"KG.subgraph(center={center}, radius={radius})")
         seen: set[str] = set()

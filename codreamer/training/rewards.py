@@ -7,6 +7,7 @@ from datetime import datetime
 
 import art
 from loguru import logger
+import weave
 
 from ..feedback.feedback import RULERFeedback, RewardMixConfig, append_event, compute_rewards, hash_trajectory
 
@@ -26,6 +27,7 @@ def _offline_score_email(subject: str, body: str, citations: list[str]) -> float
     return min(score, 1.0)
 
 
+@weave.op()
 async def score_trajectory_group(group: art.TrajectoryGroup) -> art.TrajectoryGroup:
     if os.getenv("OPENAI_API_KEY"):
         # Use built-in RULER from art.rewards when available

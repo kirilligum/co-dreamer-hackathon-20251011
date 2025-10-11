@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 
 from loguru import logger
+import weave
 
 from ..core.config import setup_logging
 from ..training.model_setup import create_and_register_model
@@ -13,6 +14,7 @@ from ..training.scenarios import load_synthetic_scenarios
 
 
 async def _run() -> None:
+    weave.init("pierg-org/codreamer")
     setup_logging()
     model = await create_and_register_model()
     scenario = load_synthetic_scenarios()[0]

@@ -30,6 +30,14 @@
   - Online outcomes (slow/high-signal): Open/reply/call/opp/closed-won. Use delayed credit assignment with simple return attribution to the terminal step or λ-return across steps.  
   - Combine as weighted mixture: r \= α·RULER \+ β·Human \+ γ·Online, where γ ramps up as data accrues.
 
+### Why citations
+
+- Grounding and traceability: ties claims to KG nodes; reduces hallucinations and aids compliance.
+- Reward attribution and KG updates: credit/debit specific nodes; improves reranker weights over time.
+- RL signal quality: enables explicit “grounding” reward in RULER/human rubrics.
+- Debugging/evaluation: shows which evidence drove outcomes; supports explainability and A/Bs.
+- Reproducibility: reconstructs evidence and re-runs decisions on the same context.
+
 
 - **Training loop (ART \+ RULER)**:  
     

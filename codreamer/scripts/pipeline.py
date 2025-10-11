@@ -14,6 +14,7 @@ from datetime import datetime
 
 import art
 from loguru import logger
+import weave
 
 from ..core.config import GROUPS_PER_STEP, LEARNING_RATE, MAX_STEPS, ROLLOUTS_PER_GROUP, setup_logging
 from ..feedback.feedback import OnlineOutcome, RewardMixConfig, append_event, compute_rewards, hash_trajectory
@@ -24,6 +25,7 @@ from ..training.rollout import ProjectTrajectory, ScenarioInput, rollout
 from ..training.scenarios import load_synthetic_scenarios
 
 
+@weave.op()
 async def generate_trajectories(model: art.Model) -> list[art.TrajectoryGroup]:
     scenarios = load_synthetic_scenarios()
     logger.info(f"[Step 1] Generating trajectories for {len(scenarios)} prospects")
@@ -38,6 +40,7 @@ async def generate_trajectories(model: art.Model) -> list[art.TrajectoryGroup]:
     return finished
 
 
+@weave.op()
 async def score_trajectories(groups: list[art.TrajectoryGroup]) -> list[art.TrajectoryGroup]:
     logger.info("[Step 2] Scoring trajectories (RULER/offline blend)")
     judged: list[art.TrajectoryGroup] = []
@@ -46,12 +49,14 @@ async def score_trajectories(groups: list[art.TrajectoryGroup]) -> list[art.Traj
     return judged
 
 
+@weave.op()
 async def grpo_update(model: art.TrainableModel, judged_groups: list[art.TrajectoryGroup]) -> None:
     logger.info("[Step 3] GRPO update (ART train)")
     await model.delete_checkpoints()
     await model.train(judged_groups, config=art.TrainConfig(learning_rate=LEARNING_RATE))
 
 
+@weave.op()
 def update_kg_weights(judged_groups: list[art.TrajectoryGroup]) -> None:
     logger.info("[Step 4] Updating KG weights from high-reward trajectories")
     scorer = KGScorer()
@@ -69,6 +74,7 @@ def update_kg_weights(judged_groups: list[art.TrajectoryGroup]) -> None:
         scorer.update_from_trajectory(node_ids, float(getattr(t, "reward", 0.0)))
 
 
+@weave.op()
 async def evaluate(model: art.Model) -> list[ProjectTrajectory]:
     logger.info("[Step 5] Evaluating: regenerate emails and compute blended feedback rewards")
     # Re-run one trajectory per scenario and compute a blended reward from feedback logs
@@ -85,7 +91,9 @@ async def evaluate(model: art.Model) -> list[ProjectTrajectory]:
     return outputs
 
 
+@weave.op()
 async def run_pipeline() -> None:
+    weave.init("pierg-org/codreamer")
     setup_logging()
     model = await create_and_register_model()
 

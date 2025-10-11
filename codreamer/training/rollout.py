@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from ..core.config import MAX_TURNS
 from ..core.data_models import FinalEmail, Scenario
 from ..core.prompts import SYSTEM_PROMPT
+import weave
 from .tools import (
     brand_tone_check,
     compliance_check,
@@ -38,6 +39,7 @@ async def _openai_client(model: art.Model) -> AsyncOpenAI:
     return AsyncOpenAI(base_url=model.inference_base_url, api_key=model.inference_api_key)
 
 
+@weave.op()
 async def rollout(model: art.Model, scenario_input: ScenarioInput) -> ProjectTrajectory:
     sc = scenario_input.scenario
     traj = ProjectTrajectory(reward=0.0, messages_and_choices=[], metadata={"step": scenario_input.step, "prospect_id": sc.prospect.prospect_id})
