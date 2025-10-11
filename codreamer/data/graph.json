@@ -1,0 +1,50 @@
+[
+  {
+    "id": "prospect:alex",
+    "content": "Prospect Alex Rivera, VP Engineering at Acme FinTech",
+    "edges": [
+      { "target": "company:acme", "label": "works_at" },
+      { "target": "problem:integration", "label": "faces" }
+    ]
+  },
+  {
+    "id": "company:acme",
+    "content": "Acme FinTech, mid-market financial services platform",
+    "edges": [
+      { "target": "prospect:alex", "label": "employs" },
+      { "target": "industry:fintech", "label": "in_industry" }
+    ]
+  },
+  {
+    "id": "industry:fintech",
+    "content": "FinTech industry context: compliance, integrations, speed",
+    "edges": []
+  },
+  {
+    "id": "problem:integration",
+    "content": "Integration overhead with legacy systems",
+    "edges": [
+      { "target": "feature:api", "label": "can_be_solved_by" },
+      { "target": "metric:roi", "label": "impacts" }
+    ]
+  },
+  {
+    "id": "feature:api",
+    "content": "Robust APIs and SDKs reduce integration time by ~60%",
+    "edges": [
+      { "target": "case:fintechco", "label": "supported_by" }
+    ]
+  },
+  {
+    "id": "case:fintechco",
+    "content": "FinTechCo cut onboarding from 6 weeks to 2 with our APIs",
+    "edges": [
+      { "target": "feature:api", "label": "supports" }
+    ]
+  },
+  {
+    "id": "metric:roi",
+    "content": "Typical 3-5x ROI within first year",
+    "edges": []
+  }
+]
