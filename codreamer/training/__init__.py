@@ -5,15 +5,9 @@ from .rewards import score_trajectory_group
 from .rollout import ProjectTrajectory, ScenarioInput, rollout
 from .scenarios import load_synthetic_scenarios
 from .tools import (
-    brand_tone_check,
-    compliance_check,
-    compose_body,
-    compose_subject,
-    expand_graph,
     finalize_email,
-    get_node_facts,
-    insert_assets,
-    rank_nodes,
+    get_connected_nodes,
+    get_relevant_context,
 )
 
 __all__ = [
@@ -23,14 +17,8 @@ __all__ = [
     "ScenarioInput",
     "rollout",
     "load_synthetic_scenarios",
-    "brand_tone_check",
-    "compliance_check",
-    "compose_body",
-    "compose_subject",
-    "expand_graph",
     "finalize_email",
-    "get_node_facts",
-    "insert_assets",
-    "rank_nodes",
+    "get_connected_nodes",
+    "get_relevant_context",
 ]
 

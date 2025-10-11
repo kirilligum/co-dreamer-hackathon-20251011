@@ -10,17 +10,15 @@
 
 - **Actions (tool-using policy)**:  
     
-  - `expand_graph(seed, goal, k)` → retrieve/score top-k nodes/paths.  
-  - `get_node_facts(node_id)` → atomic facts/citations.  
-  - `compose_subject(directive)` / `compose_body(directive, constraints)` → generate/edit sections.  
-  - `insert_assets(asset_type)` → case studies, references.  
-  - `finalize_email(subject, body, citations)` → returns final email \+ KG node ids used.
+  - `get_connected_nodes(node_id)` → return a small, ranked set of neighbor node_ids.  
+  - `get_relevant_context(node_id)` → return a concise text block synthesized from the node and top-scored neighbors, plus `citations`.  
+  - `finalize_email(subject, body, citations)` → returns the final email with cited KG node_ids.
 
 
 - **Episodes (rollouts)**:  
     
-  - Up to N turns: alternate KG exploration and drafting.  
-  - Terminal action is `finalize_email`. Trajectory contains tool calls, drafts, and citations.
+  - Up to N turns: browse KG via `get_connected_nodes`, pull evidence via `get_relevant_context`, draft subject/body, then call `finalize_email`.  
+  - Terminal action is `finalize_email`. Trajectory records tool calls, drafts, and citations.
 
 
 - **Rewards**:  
