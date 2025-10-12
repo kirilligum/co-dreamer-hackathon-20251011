@@ -1,0 +1,389 @@
+[
+  {
+    "id": "Customer Job",
+    "content": "Pearls of Wisdom, a company that generates synthetic data sets for training AI models.",
+    "edge": [
+      {
+        "target_id": "synthetic-data-use-cases-52ec0c3c",
+        "relationship": "generates",
+        "rationale": "The current node is 'Pearls of Wisdom', a company generating synthetic data. Exploring 'Synthetic Data Use Cases' expands on *how* their core offering is utilized. This moves towards understanding the broader AI development lifecycle, which is relevant to 'Weights and Biases Weave' that focuses on model evaluation and feedback, implying they cater to companies training and refining AI models across various applications."
+      },
+      {
+        "target_id": "ai-model-evaluation-metrics-e0dfa5a2",
+        "relationship": "informs",
+        "rationale": "The current node is 'Pearls of Wisdom', a synthetic data generator. To effectively train AI models, the quality of the data is paramount, and understanding how these models are evaluated is critical. Exploring 'AI Model Evaluation Metrics' connects the input (data) to the output and validation process. This is highly relevant to the product 'Weights and Biases Weave', which features a UI for feedback and model evaluation, directly addressing these metrics."
+      }
+    ]
+  },
+  {
+    "id": "synthetic-data-use-cases-52ec0c3c",
+    "content": "Applications of synthetic data in AI model training beyond basic classification.",
+    "edge": [
+      {
+        "target_id": "synthetic-data-for-reinforcement-learning-49094786",
+        "relationship": "enables",
+        "rationale": "This node explores advanced applications of synthetic data beyond basic classification, directly expanding on the 'Applications of synthetic data in AI model training beyond basic classification' current node. Reinforcement learning is a complex AI domain where robust training data is crucial, and it is a common area where sophisticated model evaluation (a feature of Weights and Biases Weave) is applied."
+      },
+      {
+        "target_id": "synthetic-data-for-generative-adversarial-networks-9fc02da2",
+        "relationship": "facilitates",
+        "rationale": "This node represents another advanced application of synthetic data, moving beyond basic AI training. GANs themselves are complex models, and evaluating their output and the models trained on their data often requires sophisticated feedback and evaluation UIs, aligning with the capabilities of Weights and Biases Weave and providing a bridge towards understanding how Pearls of Wisdom's output could be leveraged by customers using advanced tools like the product."
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "confidence": 0.862487692,
+      "summary": "Synthetic data enhances AI model training for diverse applications beyond basic classification, including autonomous systems and natural language processing, while addressing data scarcity and privacy concerns. It enables the creation of controlled datasets for specific problem aspects. Synthetic data also supports explainability and governance in AI models.",
+      "sources": [
+        "https://www.alation.com/blog/what-is-synthetic-data-in-ai/",
+        "https://keymakr.com/blog/training-ai-models-with-synthetic-data-best-practices/",
+        "https://www.nanalyze.com/2021/08/synthetic-data-companies-ai-models/",
+        "https://www.runpod.io/articles/guides/synthetic-data-generation-creating-high-quality-training-datasets-for-ai-model-development",
+        "https://arxiv.org/html/2401.01629v1"
+      ],
+      "timestamp": "2025-10-12T17:55:02.270Z"
+    }
+  },
+  {
+    "id": "ai-model-evaluation-metrics-e0dfa5a2",
+    "content": "Standard and advanced metrics used to assess the performance of AI models.",
+    "edge": [
+      {
+        "target_id": "precision-and-recall-86b78765",
+        "relationship": "includes",
+        "rationale": "The current node is about AI model performance metrics. Precision and Recall are core metrics within this domain. Understanding these foundational metrics is crucial before delving into more advanced or product-specific evaluation methods, thus progressing towards the <product>'s focus on model evaluation."
+      },
+      {
+        "target_id": "f1-score-3f96064f",
+        "relationship": "builds upon",
+        "rationale": "Following the exploration of Precision and Recall, the F1 Score is a direct extension and a common metric for model performance assessment. It demonstrates a progression from basic metrics to more comprehensive ones, aligning with the <product>'s goal of offering advanced model evaluation capabilities."
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "confidence": 0.7593229072000001,
+      "summary": "Standard metrics include accuracy, precision, recall, and F1 score; advanced metrics include AUC-ROC, MAE, MSE, and RMSE. These evaluate AI model performance.",
+      "sources": [
+        "https://www.version1.com/en-us/blog/ai-performance-metrics-the-science-and-art-of-measuring-ai/",
+        "https://svitla.com/blog/ai-ml-performance-metrics/",
+        "https://galileo.ai/blog/accuracy-metrics-ai-evaluation",
+        "https://neontri.com/blog/measure-ai-performance/",
+        "https://www.nanalyze.com/2021/08/synthetic-data-companies-ai-models/"
+      ],
+      "timestamp": "2025-10-12T17:55:04.509Z"
+    }
+  },
+  {
+    "id": "synthetic-data-for-reinforcement-learning-49094786",
+    "content": "Synthetic data can be used to train reinforcement learning agents in environments that are too dangerous, costly, or time-consuming to simulate in the real world.",
+    "edge": [
+      {
+        "target_id": "rl-agent-training-challenges-7dd95c6d",
+        "relationship": "necessitates",
+        "rationale": "This node explores the 'why' behind using synthetic data for RL, directly stemming from the current node's statement about dangerous/costly/time-consuming environments. It highlights the scale of the problem that synthetic data aims to solve, bringing us closer to the need for tools like Weights and Biases Weave for managing and evaluating these large-scale training efforts."
+      },
+      {
+        "target_id": "synthetic-data-generation-for-rl-22c33a2a",
+        "relationship": "enables",
+        "rationale": "This node builds upon the current node by focusing on the 'how' of using synthetic data for RL. It introduces the concept of generating *diverse and representative* synthetic data, which is a key challenge that a company like Pearls of Wisdom would address. This leads towards the need for robust platforms (like Weights and Biases Weave) to manage, analyze, and validate the performance of models trained on such data."
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "confidence": 0.7125664552,
+      "summary": "Synthetic data trains reinforcement learning agents in dangerous or costly scenarios. It creates realistic data to overcome real-world data limitations. It's used in industries like healthcare and autonomous driving.",
+      "sources": [
+        "https://research.aimultiple.com/synthetic-data-use-cases/",
+        "https://arxiv.org/html/2404.07503v1",
+        "https://cleverx.com/blog/synthetic-data-for-ml-the-game-changer-in-training-for-2025",
+        "https://www.tandfonline.com/doi/full/10.1080/00207543.2024.2447927",
+        "https://medium.com/@harshbhatt7585/synthetic-data-generation-using-rl-e89fe9f966c8"
+      ],
+      "timestamp": "2025-10-12T17:55:08.635Z"
+    }
+  },
+  {
+    "id": "synthetic-data-for-generative-adversarial-networks-9fc02da2",
+    "content": "Synthetic data is instrumental in training Generative Adversarial Networks (GANs) to produce novel, realistic data, which can then be used for various downstream tasks, including data augmentation and scenario generation.",
+    "edge": [
+      {
+        "target_id": "gan-data-augmentation-38ea70d9",
+        "relationship": "enables",
+        "rationale": "This node explores a downstream application of synthetic data generated by GANs, directly linking the current node's concept to a practical use case. This is relevant because Pearls of Wisdom generates synthetic data, and Weights and Biases Weave focuses on model evaluation and feedback, which would be crucial for assessing the effectiveness of models trained with augmented data."
+      },
+      {
+        "target_id": "synthetic-data-for-scenario-generation-dc02c6b2",
+        "relationship": "supports",
+        "rationale": "This node expands on the utility of synthetic data by highlighting its role in scenario generation, a key aspect for robust AI development. This connects the current node's focus on synthetic data's generative capabilities to the broader context of AI model validation and improvement, which is where Weights and Biases Weave's UI for feedback and model evaluation would be highly relevant."
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "confidence": 0.7899311680000001,
+      "summary": "Synthetic data, generated by Generative Adversarial Networks (GANs), aids in training AI models and augments real datasets. It mimics real data's statistical properties while preserving privacy. Pearls of Wisdom creates synthetic data sets for AI training.",
+      "sources": [
+        "https://blog.dreamfactory.com/synthetic-data-pipelines-and-the-future-of-ai-training",
+        "https://www.nanalyze.com/2021/08/synthetic-data-companies-ai-models/",
+        "https://www.artificialintelligencepub.com/journals/jairi/jairi-aid1004.php",
+        "https://www.ecinnovations.com/blog/synthetic-data-generation-what-is-its-role-in-ai-training/",
+        "https://ijirss.com/index.php/ijirss/article/download/8655/1950/14497"
+      ],
+      "timestamp": "2025-10-12T17:55:11.161Z"
+    }
+  },
+  {
+    "id": "precision-and-recall-86b78765",
+    "content": "Precision and Recall are fundamental metrics for evaluating binary classification models, measuring the accuracy of positive predictions and the ability to find all positive instances, respectively.",
+    "edge": [
+      {
+        "target_id": "false-positive-rate-66d84d21",
+        "relationship": "is related to",
+        "rationale": "Precision and Recall are fundamental to evaluating binary classification. The False Positive Rate is another key metric in this domain, providing a more complete picture of model performance. Understanding FPR is crucial for Pearls of Wisdom, as their synthetic data is used to train models evaluated by these metrics. This moves towards the product by exploring different facets of model evaluation."
+      },
+      {
+        "target_id": "area-under-the-roc-curve-adeae10f",
+        "relationship": "is complementary to",
+        "rationale": "Precision and Recall, along with the False Positive Rate, are key components that contribute to the AUC-ROC metric. This metric provides a single scalar value representing the classifier's ability to distinguish between classes. For Pearls of Wisdom, understanding AUC-ROC is important as it's a common high-level evaluation metric for models trained on their synthetic data, aligning with the product's focus on model evaluation."
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "confidence": 0.7744670248000001,
+      "summary": "Precision measures correct positive predictions, while recall measures the ability to find all actual positive instances. Both are crucial for evaluating binary classification models. Synthetic data enhances model training.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Evaluation_of_binary_classifiers",
+        "https://www.blog.trainindata.com/confusion-matrix-precision-and-recall/",
+        "https://www.evidentlyai.com/classification-metrics/accuracy-precision-recall",
+        "https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall",
+        "https://www.nanalyze.com/2021/08/synthetic-data-companies-ai-models/"
+      ],
+      "timestamp": "2025-10-12T17:55:15.217Z"
+    }
+  },
+  {
+    "id": "f1-score-3f96064f",
+    "content": "The F1 Score is the harmonic mean of Precision and Recall, providing a single metric that balances both false positives and false negatives, often used when class distributions are uneven.",
+    "edge": [
+      {
+        "target_id": "precision-783cdee6",
+        "relationship": "is component of",
+        "rationale": "The current node defines the F1 Score as a balance of Precision and Recall. Understanding Precision as a foundational metric for F1 score is a logical step in exploring evaluation metrics relevant to AI model performance, which is the domain of the product."
+      },
+      {
+        "target_id": "recall-6324bfda",
+        "relationship": "is component of",
+        "rationale": "Similar to Precision, Recall is a fundamental component of the F1 Score discussed in the current node. Exploring Recall deepens the understanding of AI model evaluation metrics, directly leading towards the product's focus on model evaluation."
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "confidence": 0.7345150683999999,
+      "summary": "The F1 score balances precision and recall, useful for imbalanced datasets. Synthetic data aids AI training, reducing biases and costs. Pearls of Wisdom generates synthetic datasets for AI models.",
+      "sources": [
+        "https://www.picsellia.com/post/understanding-the-f1-score-in-machine-learning-the-harmonic-mean-of-precision-and-recall",
+        "https://en.wikipedia.org/wiki/F-score",
+        "https://theanalyticsedge.medium.com/precision-vs-recall-vs-f1-score-understanding-the-right-metric-for-your-model-40946277acad",
+        "https://www.nanalyze.com/2021/08/synthetic-data-companies-ai-models/",
+        "https://www.ecinnovations.com/blog/synthetic-data-generation-what-is-its-role-in-ai-training/"
+      ],
+      "timestamp": "2025-10-12T17:55:19.936Z"
+    }
+  },
+  {
+    "id": "rl-agent-training-challenges-7dd95c6d",
+    "content": "Reinforcement learning agents often require millions or billions of interactions with an environment to learn effective policies, posing significant challenges for real-world training.",
+    "edge": [
+      {
+        "target_id": "Product Feature",
+        "relationship": "addresses challenge",
+        "rationale": "The current node highlights the challenge of 'millions or billions of interactions' for RL agents. This new node introduces the concept of synthetic data as a potential solution to this problem, directly leading towards the domain of the customer, Pearls of Wisdom, which specializes in generating synthetic data. This then paves the way to how such data could be used to evaluate and improve RL models, aligning with the product, Weights and Biases Weave, which features UI for feedback and model evaluation."
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "confidence": 0.6629935,
+      "summary": "Reinforcement learning agents often need synthetic data to train effectively due to the high interaction costs in real-world environments. Synthetic data helps address privacy concerns and reduces training time. It mimics real data but can lack diversity, leading to potential generalization issues.",
+      "sources": [
+        "https://www.sciencedirect.com/science/article/pii/S2666546822000489",
+        "https://averroes.ai/blog/complete-guide-to-synthetic-data-generation-for-ai-models",
+        "https://eitca.org/artificial-intelligence/eitc-ai-arl-advanced-reinforcement-learning/deep-reinforcement-learning/deep-reinforcement-learning-agents/examination-review-deep-reinforcement-learning-agents/what-are-the-main-challenges-associated-with-training-neural-networks-using-reinforcement-learning-and-how-do-techniques-like-experience-replay-and-target-networks-address-these-challenges/",
+        "https://moez-62905.medium.com/synthetic-data-is-the-future-of-artificial-intelligence-6fcfd2ce1a14",
+        "https://arxiv.org/html/2401.01629v1"
+      ],
+      "timestamp": "2025-10-12T17:55:24.485Z"
+    }
+  },
+  {
+    "id": "synthetic-data-generation-for-rl-22c33a2a",
+    "content": "The creation of diverse and representative synthetic datasets is crucial for enabling reinforcement learning agents to generalize well beyond their training environments.",
+    "edge": [
+      {
+        "target_id": "Product Feature",
+        "relationship": "generates",
+        "rationale": "The current node discusses the importance of synthetic datasets for reinforcement learning generalization. This new node directly links this concept to the customer, Pearls of Wisdom, establishing their core business in this area. This serves as a foundational step towards understanding how their synthetic data capabilities might align with the model evaluation and feedback features of Weights and Biases Weave."
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "confidence": 0.671889262,
+      "summary": "Diverse synthetic datasets enhance reinforcement learning generalization; exploration and varied training environments are crucial for optimal performance. Synthetic data helps balance datasets and mitigate biases. Effective exploration and diverse training improve model robustness.",
+      "sources": [
+        "https://medium.com/@harshbhatt7585/synthetic-data-generation-using-rl-e89fe9f966c8",
+        "https://arxiv.org/html/2410.15226v2",
+        "https://proceedings.neurips.cc/paper_files/paper/2023/file/2a4310c4fd24bd336aa2f64f93cb5d39-Paper-Conference.pdf",
+        "https://inferencebysequoia.substack.com/p/the-promise-and-perils-of-synthetic",
+        "https://openreview.net/forum?id=oN9STRYQVa&referrer=%5Bthe%20profile%20of%20Christopher%20D%20Manning%5D(%2Fprofile%3Fid%3D~Christopher_D_Manning1)"
+      ],
+      "timestamp": "2025-10-12T17:55:29.938Z"
+    }
+  },
+  {
+    "id": "gan-data-augmentation-38ea70d9",
+    "content": "Synthetic data generated by GANs can be used to augment existing datasets, improving the robustness and diversity of AI models.",
+    "edge": [
+      {
+        "target_id": "Product Feature",
+        "relationship": "enables",
+        "rationale": "The current node discusses synthetic data from GANs for AI model robustness. This new node expands on the *applications* of GAN-generated synthetic data, which could be a key area for Pearls of Wisdom. Understanding these applications helps connect the core capability (synthetic data generation) to potential use cases relevant to AI model development and evaluation, aligning with the direction of Weights and Biases Weave."
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "confidence": 0.7951631956,
+      "summary": "Synthetic data from GANs augments AI datasets, improving model robustness and diversity. It helps address data scarcity and bias, enhancing model performance. Pearls of Wisdom uses this to train AI models effectively.",
+      "sources": [
+        "https://www.k2view.com/blog/generative-ai-synthetic-data/",
+        "https://www.xcubelabs.com/blog/synthetic-data-generation-using-generative-ai-techniques-and-applications/",
+        "https://itrexgroup.com/blog/synthetic-data-generation-using-generative-ai/",
+        "https://www.weka.io/learn/ai-ml/synthetic-data/",
+        "https://www.ecinnovations.com/blog/synthetic-data-generation-what-is-its-role-in-ai-training/"
+      ],
+      "timestamp": "2025-10-12T17:55:33.870Z"
+    }
+  },
+  {
+    "id": "synthetic-data-for-scenario-generation-dc02c6b2",
+    "content": "Synthetic data can be employed to create diverse and complex scenarios for testing and validating AI systems, particularly in safety-critical applications.",
+    "edge": [
+      {
+        "target_id": "Product Feature",
+        "relationship": "is relevant to",
+        "rationale": "The current node highlights the use of synthetic data in safety-critical applications. This new node defines what constitutes a safety-critical application, providing context for why synthetic data is valuable in these domains. This indirectly leads towards the product by establishing the high stakes and rigorous demands often associated with AI development and deployment, areas where tools like Weights and Biases Weave are crucial for ensuring quality and reliability."
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "confidence": 0.7935761511999999,
+      "summary": "Synthetic data is used to train and test AI systems, ensuring safety and privacy, especially in critical applications. It mimics real data without using actual personal information. This approach helps avoid biases and enhances model robustness.",
+      "sources": [
+        "https://www.moveworks.com/us/en/resources/blog/synthetic-data-for-ai-development",
+        "https://centific.com/blog/adopt-synthetic-visual-data-to-improve-ai-models",
+        "https://www.ecinnovations.com/blog/synthetic-data-generation-what-is-its-role-in-ai-training/",
+        "https://accutivesecurity.com/guide-to-synthetic-data-generation-tool-for-secure-testing-and-ai/",
+        "https://arxiv.org/html/2401.01629v1"
+      ],
+      "timestamp": "2025-10-12T17:55:36.566Z"
+    }
+  },
+  {
+    "id": "false-positive-rate-66d84d21",
+    "content": "The False Positive Rate (FPR) is a metric used in binary classification that measures the proportion of actual negatives that were incorrectly identified as positive.",
+    "edge": [
+      {
+        "target_id": "Product Feature",
+        "relationship": "affects",
+        "rationale": "This node connects the abstract concept of False Positive Rate to the practical application in AI model training. Since the customer 'Pearls of Wisdom' generates synthetic data for AI training and the product 'Weights and Biases Weave' is for model evaluation, understanding how FPR impacts training is crucial for assessing product-market fit. It bridges the metric to the customer's core business and the product's domain."
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "confidence": 0.7872754516,
+      "summary": "The False Positive Rate (FPR) measures the proportion of actual negatives incorrectly classified as positives. It is calculated as the number of false positives divided by the total number of actual negatives. FPR is useful but less meaningful in highly imbalanced datasets.",
+      "sources": [
+        "https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall",
+        "https://www.pico.net/kb/what-is-a-false-positive-rate/",
+        "https://neptune.ai/blog/evaluation-metrics-binary-classification",
+        "https://www.nanalyze.com/2021/08/synthetic-data-companies-ai-models/",
+        "https://stats.stackexchange.com/questions/506272/how-would-i-bias-my-binary-classifier-to-prefer-false-positive-errors-over-false"
+      ],
+      "timestamp": "2025-10-12T17:55:42.104Z"
+    }
+  },
+  {
+    "id": "area-under-the-roc-curve-adeae10f",
+    "content": "Area Under the Receiver Operating Characteristic Curve (AUC-ROC) is a performance measurement for classification problems at various threshold settings between true positive rate and false positive rate.",
+    "edge": [
+      {
+        "target_id": "Product Feature",
+        "relationship": "is a metric used for",
+        "rationale": "The current node defines AUC-ROC as a performance measurement for classification problems. This new node broadens the context by introducing the general concept of 'Classification Model Evaluation', which is directly relevant to both the current node (AUC-ROC is a part of this evaluation) and the product (Weights and Biases Weave is a tool for model evaluation). This helps connect the specific metric to the broader task of evaluating AI models, which is the core business of Pearls of Wisdom and the application area of the product."
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "confidence": 0.8478379744,
+      "summary": "The AUC-ROC measures a model's ability to distinguish between classes at various thresholds. A higher AUC-ROC score indicates better performance, with 1 indicating perfect discrimination and 0.5 indicating no better than random guessing. Synthetic data enhances model accuracy.",
+      "sources": [
+        "https://galileo.ai/blog/auc-roc-model-evalulation",
+        "https://www.analyticsvidhya.com/blog/2020/06/auc-roc-curve-machine-learning/",
+        "https://www.evidentlyai.com/classification-metrics/explain-roc-curve",
+        "https://www.geeksforgeeks.org/machine-learning/auc-roc-curve/",
+        "https://www.nanalyze.com/2021/08/synthetic-data-companies-ai-models/"
+      ],
+      "timestamp": "2025-10-12T17:55:44.825Z"
+    }
+  },
+  {
+    "id": "precision-783cdee6",
+    "content": "Precision measures the proportion of true positive predictions among all positive predictions, indicating how trustworthy a positive prediction is.",
+    "edge": [
+      {
+        "target_id": "Product Feature",
+        "relationship": "enables",
+        "rationale": "This concept connects to and enables the use of the product."
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "confidence": 0.700262632,
+      "summary": "Precision measures the proportion of true positive predictions among all positive predictions made by a model. It is crucial when false positives are costly. Precision is calculated as the ratio of true positives to the total positive predictions.",
+      "sources": [
+        "https://encord.com/blog/classification-metrics-accuracy-precision-recall/",
+        "https://keylabs.ai/blog/importance-of-precision-in-ai-and-machine-learning/",
+        "https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall",
+        "https://www.ecinnovations.com/blog/synthetic-data-generation-what-is-its-role-in-ai-training/",
+        "https://www.ve3.global/growing-role-of-synthetic-data-for-ai-training-privacy-and-simulation/"
+      ],
+      "timestamp": "2025-10-12T17:55:51.184Z"
+    }
+  },
+  {
+    "id": "recall-6324bfda",
+    "content": "Recall measures the proportion of actual positive instances that were correctly identified by the model, indicating how well the model finds all the positive cases.",
+    "edge": [
+      {
+        "target_id": "Product Feature",
+        "relationship": "is an example of",
+        "rationale": "The current node defines 'Recall' as a specific measurement. This new node broadens the scope to 'Model Evaluation Metrics', which is a core concept for 'Weights and Biases Weave'. Understanding the broader category of metrics helps contextualize Recall and its importance in the product's UI for model evaluation, thus moving the exploration towards the product."
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "confidence": 0.8765452828,
+      "summary": "Recall measures the proportion of actual positive instances correctly identified by the model. It focuses on finding all positive cases, even if it results in more false positives. High recall is crucial in scenarios where missing positive cases is more serious than false alarms.",
+      "sources": [
+        "https://encord.com/blog/classification-metrics-accuracy-precision-recall/",
+        "https://www.ultralytics.com/glossary/recall",
+        "https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall",
+        "https://www.evidentlyai.com/classification-metrics/accuracy-precision-recall",
+        "https://www.geeksforgeeks.org/machine-learning/precision-and-recall-in-machine-learning/"
+      ],
+      "timestamp": "2025-10-12T17:55:53.902Z"
+    }
+  },
+  {
+    "id": "Product Feature",
+    "content": "Weights and Biases Weave, featuring a UI for feedback and model evaluation.",
+    "edge": []
+  }
+]
