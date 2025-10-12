@@ -204,14 +204,13 @@ const finalizeGraph = createStep({
     finalNodeCount: z.number(),
   }),
   outputSchema: dreamOutputSchema,
-  execute: async ({ inputData, context }) => {
+  execute: async ({ inputData }) => {
     console.log('[Step 4] Finalizing knowledge graph...');
 
     const { nodes } = inputData;
 
-    // Calculate generation time from workflow start
-    const startTime = context?.workflowStartTime || Date.now();
-    const generationTime = Date.now() - startTime;
+    // Note: Generation time will be calculated by the server
+    const generationTime = 0;
 
     const metadata = {
       totalNodes: nodes.length,
