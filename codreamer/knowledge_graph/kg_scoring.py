@@ -37,8 +37,12 @@ class KGScorer:
     @weave.op()
     def update_from_trajectory(self, node_ids: list[str], reward: float) -> None:
         logger.debug(f"KGScorer.update_from_trajectory(nodes={node_ids}, reward={reward:.3f})")
+        # Additive update toward reward with small step; encourages increases when reward > current
+        step = 0.1
         for nid in node_ids:
-            self.scores[nid] = max(0.0, min(1.0, self.scores.get(nid, 0.0) * 0.9 + reward * 0.1))
+            current = float(self.scores.get(nid, 1.0))
+            delta = step * (reward - current)
+            self.scores[nid] = max(0.0, min(1.0, current + delta))
         with self.path.open("w", encoding="utf-8") as f:
             json.dump(self.scores, f, indent=2)
 

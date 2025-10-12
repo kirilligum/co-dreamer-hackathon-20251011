@@ -10,8 +10,8 @@ PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parent.parent
 
 # Rollout and training hyperparameters for the MVP
 MAX_TURNS: Final[int] = 5
-GROUPS_PER_STEP: Final[int] = 1
-ROLLOUTS_PER_GROUP: Final[int] = 3
+GROUPS_PER_STEP: Final[int] = 2
+ROLLOUTS_PER_GROUP: Final[int] = 5
 LEARNING_RATE: Final[float] = 1e-5
 MAX_STEPS: Final[int] = 2
 RANDOM_SEED: Final[int] = 7

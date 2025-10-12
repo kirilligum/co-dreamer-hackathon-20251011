@@ -62,7 +62,6 @@ async def score_trajectories(groups: list[art.TrajectoryGroup]) -> list[art.Traj
 @weave.op()
 async def grpo_update(model: art.TrainableModel, judged_groups: list[art.TrajectoryGroup]) -> None:
     logger.info("[Step 3] GRPO update (ART train)")
-    await model.delete_checkpoints()
     await model.train(judged_groups, config=art.TrainConfig(learning_rate=LEARNING_RATE))
 
 

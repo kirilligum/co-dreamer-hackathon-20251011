@@ -58,9 +58,22 @@ LLMJudge scoring
 - When `OPENAI_API_KEY` is set, a judge LLM returns relative scores for each trajectory’s (subject, body), normalized to [0,1].  
 - Scores are logged as feedback and blended with other signals into the final reward.
 
+Reward computation (blended)
+- Final per-trajectory reward r is the weighted mixture: r = α·RULER + β·Human + γ·Online.  
+- Inputs: RULER rubric scores (or offline fallback), optional human preference signals, and simulated/real online outcomes.  
+- This blended reward is used for both GRPO model updates and KG node updates.
+
 Node scoring and reconciliation
 - `node_scores.json` is reconciled on load to match current graph node IDs (drop unknown, add missing with default 1.0, clamp [0,1]).  
-- Updates per iteration use a smoothed rule: `score = clamp(score*0.9 + reward*0.1)` for cited nodes.
+- Per iteration, only nodes cited in the final email of the top-half rewarded trajectories are updated.  
+- Update rule per cited node: `score = clamp(score*0.9 + reward*0.1)` with clamp to [0,1].  
+- If the blended `reward` is lower than the current `score`, that node’s score decreases; nodes not cited or not selected remain unchanged (no global decay).  
+- Scores persist in `data/node_scores.json`; a snapshot is written per iteration under `results/runs/<run-id>/iter<i>_node_scores.json`.
+
+GRPO model update (Step 3)
+- The policy model is trained with GRPO using the blended rewards as advantages (higher-reward behavior becomes more likely).  
+- For the MVP, one gradient step per batch is sufficient; checkpoints/logs are persisted on the backend.
+
 
 
 - **Knowledge graph improvement (co-optimization)**:  
