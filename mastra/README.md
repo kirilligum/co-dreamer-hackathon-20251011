@@ -21,53 +21,96 @@ flowchart TB
     Check -->|true| WF[Mastra Workflow]
     Check -->|false| Legacy[Legacy BFS]
 
-    WF --> Step1[Step 1: Initialize Anchors]
+    WF --> DaytonaCheck{USE_DAYTONA?}
+
+    DaytonaCheck -->|true| Step0[Step 0: Create Daytona Workspace]
+    DaytonaCheck -->|false| Step1[Step 1: Initialize Anchors]
+
+    Step0 --> DaytonaWS[Isolated Workspace<br/>File System + Logs]
+    Step0 --> Step1
+
     Step1 --> Anchor1[Customer Job Node]
     Step1 --> Anchor2[Product Feature Node]
 
     Step1 --> Step2[Step 2: BFS Expansion]
+    Step2 --> LLM[Gemini AI<br/>Node Generation]
     Step2 --> Gen1[Generation 1<br/>1 node → 2 children]
     Gen1 --> Gen2[Generation 2<br/>2 nodes → 4 children]
     Gen2 --> Gen3[Generation 3<br/>4 nodes → 8 children]
 
-    Step2 --> Step3[Step 3: Connect to Product]
+    Gen3 --> VerifyCheck{VERIFY_FACTS?}
+    VerifyCheck -->|true| Tavily[Tavily Web Search<br/>Fact Verification]
+    VerifyCheck -->|false| Step3[Step 3: Connect to Product]
+    Tavily --> VerifyResult[Confidence Score<br/>+ Sources]
+    VerifyResult --> Step3
+
     Step3 --> Connect[Link leaf nodes<br/>to Product Feature]
 
     Step3 --> Step4[Step 4: Finalize]
     Step4 --> Meta[Add metadata<br/>& timing info]
+    Step4 --> CleanupCheck{Keep Workspace?}
+    CleanupCheck -->|false| Cleanup[Destroy Daytona Workspace]
+    CleanupCheck -->|true| Keep[Keep for Debugging]
 
     Legacy --> BFS[BFS Algorithm]
     BFS --> LegacyGen[Generate nodes<br/>level by level]
 
     Meta --> Response([JSON Response])
+    Cleanup --> Response
+    Keep --> Response
     LegacyGen --> Response
 
     style WF fill:#4CAF50
     style Legacy fill:#FFC107
+    style Step0 fill:#9C27B0
     style Step1 fill:#2196F3
     style Step2 fill:#2196F3
     style Step3 fill:#2196F3
     style Step4 fill:#2196F3
+    style DaytonaWS fill:#9C27B0
+    style Tavily fill:#FF5722
+    style VerifyResult fill:#FF5722
+    style LLM fill:#FFB300
 ```
 
 ### Workflow Steps
 
+**Step 0: Create Daytona Workspace (Optional)**
+- Creates an isolated Daytona workspace for dream execution
+- Provides file system, process execution, and logging capabilities
+- Each dream runs in its own sandboxed environment
+- Saves checkpoints and logs throughout execution
+- Automatically cleaned up after completion (configurable)
+
 **Step 1: Initialize Anchors**
 - Creates "Customer Job" and "Product Feature" anchor nodes
 - Sets up the graph foundation
+- Saves initial graph state to Daytona workspace (if enabled)
 
 **Step 2: BFS Expansion**
-- Iteratively generates child nodes using LLM
+- Iteratively generates child nodes using Gemini AI LLM
 - Each generation: parent nodes → N children per parent
 - Default: 2 children × 3 generations = 14 nodes (+ 2 anchors)
+- Logs generation progress to Daytona workspace (if enabled)
+- Saves checkpoints after each generation
+
+**Step 2.5: Fact Verification (Optional)**
+- Uses Tavily web search to verify node content
+- Provides confidence scores (0-1 scale) for each fact
+- Returns search results, sources, and AI-generated summaries
+- Helps ensure generated content is factually accurate
+- Can verify nodes individually or in batches
 
 **Step 3: Connect to Product**
 - Identifies leaf nodes (nodes with no children)
 - Creates edges from leaves to "Product Feature" anchor
 - Completes the customer→product journey
+- Logs connections to Daytona workspace (if enabled)
 
 **Step 4: Finalize**
-- Adds metadata (node count, generation time, etc.)
+- Adds metadata (node count, generation time, workspace ID, etc.)
+- Saves final results to Daytona workspace
+- Cleans up workspace resources (unless KEEP_DAYTONA_WORKSPACE=true)
 - Returns complete knowledge graph
 
 ## Quick Start
@@ -78,9 +121,9 @@ flowchart TB
 pnpm install
 ```
 
-### 2. Configure API Key
+### 2. Configure API Keys
 
-**Important**: The API key is no longer hardcoded for security reasons.
+**Important**: API keys are no longer hardcoded for security reasons.
 
 Create a `.env` file in the project root:
 
@@ -88,13 +131,23 @@ Create a `.env` file in the project root:
 cp .env.example .env
 ```
 
-Edit `.env` and add your Gemini API key:
+Edit `.env` and add your API keys:
 
 ```bash
-GEMINI_API_KEY=your-api-key-here
+# Required: Gemini AI for node generation
+GEMINI_API_KEY=your-gemini-api-key-here
+
+# Optional: Tavily for fact verification
+TAVILY_API_KEY=your-tavily-api-key-here
+
+# Optional: Keep Daytona workspaces for debugging
+KEEP_DAYTONA_WORKSPACE=false
 ```
 
-Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+**Get API Keys:**
+- **Gemini**: [Google AI Studio](https://makersuite.google.com/app/apikey)
+- **Tavily**: [Tavily API](https://tavily.com/) (for fact verification)
+- **Daytona**: Configured automatically via [@daytonaio/sdk](https://www.npmjs.com/package/@daytonaio/sdk)
 
 ### 3. Start the Service
 
@@ -120,6 +173,9 @@ The service will start on `http://localhost:3457`
 ✅ **Easier Debugging**: Clear separation of concerns
 ✅ **Type Safety**: Validated inputs/outputs with Zod schemas
 ✅ **Maintainability**: Structured workflow vs monolithic function
+✅ **Isolated Execution**: Optional Daytona workspaces for sandboxed dream runs
+✅ **Fact Verification**: Optional Tavily integration for verifying generated content
+✅ **Checkpoint System**: Save and resume workflows at any generation
 ✅ **Future-Ready**: Easy to add features like suspend/resume, streaming, etc.
 
 ## API Usage
@@ -512,9 +568,12 @@ const port = 3457; // Change to your desired port
 This microservice is designed to be part of a larger Code Dreamer system:
 
 1. **Email Generator**: Use the knowledge graph to create personalized sales emails
-2. **Fact Verification**: Add web search to verify generated facts
-3. **Graph Visualization**: Build UI to explore the knowledge graph
-4. **Feedback Loop**: Implement reinforcement learning based on email performance
+2. ✅ **Fact Verification**: Tavily web search integration for verifying generated facts (implemented)
+3. ✅ **Isolated Execution**: Daytona workspace integration for sandboxed dream runs (implemented)
+4. **Graph Visualization**: Build UI to explore the knowledge graph
+5. **Feedback Loop**: Implement reinforcement learning based on email performance
+6. **RAG Integration**: Use semantic search with embeddings for better fact retrieval
+7. **Evals Framework**: Mastra Evals for automated quality assessment of knowledge graphs
 
 ## License
 
