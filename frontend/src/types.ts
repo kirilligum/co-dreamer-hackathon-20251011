@@ -4,10 +4,19 @@ export interface Edge {
   rationale: string;
 }
 
+export interface VerificationInfo {
+  verified: boolean;
+  confidence: number;
+  summary: string;
+  sources: string[];
+  timestamp: string;
+}
+
 export interface Node {
   id: string;
   content: string;
   edge: Edge[];
+  verification?: VerificationInfo;
 }
 
 export interface DreamRequest {
