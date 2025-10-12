@@ -10,7 +10,7 @@
 
 ### OpenPipe: iterative RL on knowledge graph traversal and query response model [OpenPipe Art - README](./ART_RL.md)
 
-### Copilot: UI and batch edit of graph content in UI - [agui-README](./codreamer-agui/README.md)
+### Copilot: UI and batch edit of graph content in UI - [agui-README](./COPILOTKIT.md)
 
 ### Tavily: websearch fact check
 
