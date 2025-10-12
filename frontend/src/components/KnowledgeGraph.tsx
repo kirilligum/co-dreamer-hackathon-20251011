@@ -69,12 +69,56 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ nodes }) => {
         const isProductFeature = nodeId === 'Product Feature';
         const isAnchorNode = isCustomerJob || isProductFeature;
 
+        // Determine verification status colors
+        const verification = node.verification;
+        let verificationBorderColor = '#6366f1'; // default blue
+        let verificationBadgeColor = '#9ca3af'; // gray for no verification
+        let verificationIcon = '?';
+
+        if (verification) {
+          if (verification.verified && verification.confidence >= 0.7) {
+            verificationBorderColor = '#10b981'; // green for high confidence
+            verificationBadgeColor = '#10b981';
+            verificationIcon = '✓';
+          } else if (verification.verified && verification.confidence >= 0.5) {
+            verificationBorderColor = '#f59e0b'; // amber for medium confidence
+            verificationBadgeColor = '#f59e0b';
+            verificationIcon = '~';
+          } else {
+            verificationBorderColor = '#ef4444'; // red for unverified
+            verificationBadgeColor = '#ef4444';
+            verificationIcon = '✗';
+          }
+        }
+
         fNodes.push({
           id: nodeId,
           type: isCustomerJob ? 'input' : isProductFeature ? 'output' : 'default',
           data: {
             label: (
-              <div style={{ padding: '10px', maxWidth: '250px' }}>
+              <div style={{ padding: '10px', maxWidth: '250px', position: 'relative' }}>
+                {/* Verification badge */}
+                {verification && !isAnchorNode && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '-8px',
+                    right: '-8px',
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '50%',
+                    backgroundColor: verificationBadgeColor,
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    border: '2px solid #ffffff',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  }}>
+                    {verificationIcon}
+                  </div>
+                )}
                 <div style={{ fontWeight: 'bold', marginBottom: '5px', fontSize: '12px' }}>
                   {isCustomerJob ? 'Customer Job' : isProductFeature ? 'Product Feature' : nodeId.split('-').slice(0, -1).join(' ')}
                 </div>
@@ -82,6 +126,34 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ nodes }) => {
                   {node.content.substring(0, 100)}
                   {node.content.length > 100 ? '...' : ''}
                 </div>
+                {/* Confidence indicator */}
+                {verification && !isAnchorNode && (
+                  <div style={{
+                    marginTop: '8px',
+                    fontSize: '10px',
+                    color: isAnchorNode ? '#ffffff' : '#888',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}>
+                    <span>Confidence:</span>
+                    <div style={{
+                      flex: 1,
+                      height: '4px',
+                      backgroundColor: '#e5e7eb',
+                      borderRadius: '2px',
+                      overflow: 'hidden',
+                    }}>
+                      <div style={{
+                        height: '100%',
+                        width: `${verification.confidence * 100}%`,
+                        backgroundColor: verificationBadgeColor,
+                        transition: 'width 0.3s ease',
+                      }} />
+                    </div>
+                    <span>{(verification.confidence * 100).toFixed(0)}%</span>
+                  </div>
+                )}
               </div>
             )
           },
@@ -94,8 +166,10 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ nodes }) => {
           style: {
             background: isCustomerJob ? '#6366f1' : isProductFeature ? '#10b981' : '#ffffff',
             color: isAnchorNode ? '#ffffff' : '#000000',
-            border: isAnchorNode ? '3px solid' : '2px solid #6366f1',
-            borderColor: isCustomerJob ? '#4f46e5' : isProductFeature ? '#059669' : '#6366f1',
+            border: isAnchorNode ? '3px solid' : '2px solid',
+            borderColor: isAnchorNode
+              ? (isCustomerJob ? '#4f46e5' : '#059669')
+              : verificationBorderColor,
             borderRadius: '8px',
             padding: '0',
             width: 'auto',
@@ -146,9 +220,28 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ nodes }) => {
   const onNodeClick = useCallback((_event: React.MouseEvent, node: FlowNode) => {
     const originalNode = nodes.find((n) => n.id === node.id);
     if (originalNode) {
-      alert(
-        `Node: ${node.id}\n\nContent: ${originalNode.content}\n\nOutgoing connections: ${originalNode.edge.length}`
-      );
+      let alertMessage = `Node: ${node.id}\n\nContent: ${originalNode.content}\n\nOutgoing connections: ${originalNode.edge.length}`;
+
+      // Add verification information if available
+      if (originalNode.verification) {
+        const v = originalNode.verification;
+        alertMessage += `\n\n--- Verification ---`;
+        alertMessage += `\nStatus: ${v.verified ? '✓ VERIFIED' : '✗ UNVERIFIED'}`;
+        alertMessage += `\nConfidence: ${(v.confidence * 100).toFixed(1)}%`;
+        alertMessage += `\nSummary: ${v.summary}`;
+        if (v.sources.length > 0) {
+          alertMessage += `\n\nSources (${v.sources.length}):`;
+          v.sources.slice(0, 3).forEach((source, i) => {
+            alertMessage += `\n${i + 1}. ${source}`;
+          });
+          if (v.sources.length > 3) {
+            alertMessage += `\n... and ${v.sources.length - 3} more`;
+          }
+        }
+        alertMessage += `\n\nVerified at: ${new Date(v.timestamp).toLocaleString()}`;
+      }
+
+      alert(alertMessage);
     }
   }, [nodes]);
 

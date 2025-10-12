@@ -1,13 +1,16 @@
-import { Node, Edge, DreamRequest, LLMGeneratedNode, CUSTOMER_JOB_ID, PRODUCT_FEATURE_ID } from "./types";
+import { Node, Edge, DreamRequest, LLMGeneratedNode, CUSTOMER_JOB_ID, PRODUCT_FEATURE_ID, VerificationInfo } from "./types";
 import { LLMService } from "./llm-service";
+import { VerificationService } from "./verification-service";
 import { randomUUID } from "crypto";
 
 export class DreamerService {
   private llmService: LLMService;
+  private verificationService: VerificationService;
   private graphStore: Map<string, Node>;
 
   constructor() {
     this.llmService = new LLMService();
+    this.verificationService = new VerificationService();
     this.graphStore = new Map();
   }
 
@@ -64,6 +67,39 @@ export class DreamerService {
               content: generated.new_node_content,
               edge: [],
             };
+
+            // Verify the node content using web search
+            console.log(`  Verifying node: ${childNode.id}`);
+            try {
+              const verificationResult = await this.verificationService.verifyNode(
+                childNode.content,
+                { customer, product }
+              );
+
+              // Add verification info to the node
+              childNode.verification = {
+                verified: verificationResult.verified,
+                confidence: verificationResult.confidence,
+                summary: verificationResult.summary,
+                sources: verificationResult.sources,
+                timestamp: new Date().toISOString(),
+              };
+
+              console.log(
+                `  ${verificationResult.verified ? '✓' : '✗'} Verification: ${childNode.id} ` +
+                `(confidence: ${(verificationResult.confidence * 100).toFixed(1)}%)`
+              );
+            } catch (error) {
+              console.error(`  Error verifying node ${childNode.id}:`, error);
+              // Add failed verification info
+              childNode.verification = {
+                verified: false,
+                confidence: 0,
+                summary: `Verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                sources: [],
+                timestamp: new Date().toISOString(),
+              };
+            }
 
             // Create edge from current node to child
             const edge: Edge = {
