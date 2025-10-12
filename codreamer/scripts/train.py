@@ -8,6 +8,8 @@ import art
 from art.utils import iterate_dataset
 from loguru import logger
 import weave
+import os
+from dotenv import load_dotenv
 
 from ..core.config import GROUPS_PER_STEP, LEARNING_RATE, MAX_STEPS, ROLLOUTS_PER_GROUP, setup_logging
 from ..training.model_setup import create_and_register_model
@@ -17,7 +19,9 @@ from ..training.scenarios import load_synthetic_scenarios
 
 
 async def _run() -> None:
-    weave.init("pierg-org/codreamer")
+    load_dotenv()
+    weave_project = os.getenv("WEAVE_PROJECT", "pierg-org/codreamer")
+    weave.init(weave_project)
     setup_logging()
     model = await create_and_register_model()
     scenarios = load_synthetic_scenarios()

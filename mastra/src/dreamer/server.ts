@@ -10,7 +10,7 @@ import { RAGService } from "./rag-service";
 import { GraphEvalService } from "./eval-service";
 
 // Load environment variables from .env file in project root
-config({ path: "/home/kirill/hachathons/co-dreamer-hackathon-20251011/.env" });
+config({ path: "../../../.env" });
 
 const app = new Hono();
 
@@ -27,6 +27,8 @@ const evalService = new GraphEvalService();
 
 // Flag to toggle between workflow and legacy implementation
 const USE_WORKFLOW = process.env.USE_WORKFLOW === 'true';
+// Flag to enable Daytona workspace execution
+const USE_DAYTONA = process.env.USE_DAYTONA === 'true';
 
 // Initialize storage asynchronously
 (async () => {
@@ -62,7 +64,12 @@ app.post("/api/v1/dream", async (c) => {
     }
 
     console.log("Starting dream process...");
-    console.log(`Implementation: ${USE_WORKFLOW ? 'Mastra Workflow' : 'Legacy BFS'}`);
+    const implementationType = USE_DAYTONA
+      ? 'Mastra Workflow with Daytona'
+      : USE_WORKFLOW
+        ? 'Mastra Workflow'
+        : 'Legacy BFS';
+    console.log(`Implementation: ${implementationType}`);
     console.log(`Customer: ${body.customer.substring(0, 50)}...`);
     console.log(`Product: ${body.product.substring(0, 50)}...`);
     console.log(`Children count: ${body.children_count || 2}`);
@@ -71,7 +78,35 @@ app.post("/api/v1/dream", async (c) => {
     const startTime = Date.now();
     let graph;
 
-    if (USE_WORKFLOW) {
+    if (USE_DAYTONA) {
+      // Use Mastra workflow with Daytona
+      console.log("Using Mastra workflow with Daytona implementation");
+
+      const workflow = mastra.getWorkflow('dreamWorkflowDaytona');
+      const run = await workflow.createRunAsync();
+      const workflowResult = await run.start({
+        inputData: {
+          customer: body.customer,
+          product: body.product,
+          children_count: body.children_count || 2,
+          generations_count_int: body.generations_count_int || 3,
+        },
+      });
+
+      if (workflowResult.status === 'success') {
+        graph = workflowResult.result.nodes;
+        const actualGenerationTime = Date.now() - startTime;
+        console.log(`Workflow completed in ${actualGenerationTime}ms`);
+        console.log(`Generated ${workflowResult.result.metadata.totalNodes} nodes`);
+        if (workflowResult.result.metadata.daytonaWorkspaceId) {
+          console.log(`Daytona workspace: ${workflowResult.result.metadata.daytonaWorkspaceId}`);
+        }
+        // Update metadata with actual generation time
+        workflowResult.result.metadata.generationTime = actualGenerationTime;
+      } else {
+        throw new Error(`Workflow failed with status: ${workflowResult.status}`);
+      }
+    } else if (USE_WORKFLOW) {
       // Use Mastra workflow
       console.log("Using Mastra workflow implementation");
 
@@ -84,15 +119,15 @@ app.post("/api/v1/dream", async (c) => {
           children_count: body.children_count || 2,
           generations_count_int: body.generations_count_int || 3,
         },
-        context: {
-          workflowStartTime: startTime,
-        },
       });
 
       if (workflowResult.status === 'success') {
         graph = workflowResult.result.nodes;
-        console.log(`Workflow completed in ${workflowResult.result.metadata.generationTime}ms`);
+        const actualGenerationTime = Date.now() - startTime;
+        console.log(`Workflow completed in ${actualGenerationTime}ms`);
         console.log(`Generated ${workflowResult.result.metadata.totalNodes} nodes`);
+        // Update metadata with actual generation time
+        workflowResult.result.metadata.generationTime = actualGenerationTime;
       } else {
         throw new Error(`Workflow failed with status: ${workflowResult.status}`);
       }

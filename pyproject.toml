@@ -19,6 +19,7 @@ dependencies = [
     "loguru>=0.7.3",
     "fastapi>=0.115.0",
     "uvicorn[standard]>=0.30.0",
+    "streamlit>=1.37.0",
 ]
 
 [project.scripts]
@@ -33,6 +34,7 @@ step4-update-kg = "codreamer.scripts.pipeline:main_step4"
 step5-evaluate = "codreamer.scripts.pipeline:main_step5"
 learn-loop = "codreamer.scripts.pipeline:main_loop"
 api = "codreamer.scripts.api:main"
+dashboard = "codreamer.scripts.dashboard:main"
 
 [build-system]
 requires = ["hatchling"]

@@ -36,7 +36,7 @@ async def score_trajectory_group(group: art.TrajectoryGroup) -> art.TrajectoryGr
         logger.info("Using LLMJudge scoring (online)")
 
         async def _llm_judge_scores(cands: list[tuple[str, str]]) -> list[float]:
-            """Return relative scores in [0,1] for each (subject, body)."""
+            """Return absolute scores in [0,1] for each (subject, body)."""
             client = AsyncOpenAI()
             items = []
             for idx, (subj, body) in enumerate(cands, 1):
@@ -63,14 +63,8 @@ async def score_trajectory_group(group: art.TrajectoryGroup) -> art.TrajectoryGr
             except Exception:
                 # Fallback: simple descending scores
                 scores = [1.0 - (i / max(1, len(cands) - 1)) for i in range(len(cands))]
-            # Min-max normalize to [0,1]
-            if scores:
-                mn, mx = min(scores), max(scores)
-                if mx > mn:
-                    scores = [(s - mn) / (mx - mn) for s in scores]
-                else:
-                    scores = [0.5 for _ in scores]
-            return scores
+            # Clip to [0,1] without renormalizing to preserve absolute scale
+            return [min(1.0, max(0.0, s)) for s in scores]
 
         # Build candidates from trajectories
         candidates: list[tuple[str, str]] = []
@@ -87,9 +81,13 @@ async def score_trajectory_group(group: art.TrajectoryGroup) -> art.TrajectoryGr
 
         scores = await _llm_judge_scores(candidates)
 
+        # Compute ranks based on absolute scores (descending); 1 is best
+        order = sorted(range(len(scores)), key=lambda i: -scores[i])
+        rank_map = {idx: rank + 1 for rank, idx in enumerate(order)}
+
         trajectories = []
         traj_ids = []
-        for t, s in zip(group.trajectories, scores):
+        for idx, (t, s) in enumerate(zip(group.trajectories, scores)):
             t.reward = float(s)
             trajectories.append(t)
             tid = hash_trajectory(t.messages_and_choices)
@@ -99,9 +97,9 @@ async def score_trajectory_group(group: art.TrajectoryGroup) -> art.TrajectoryGr
                 prospect_id=str(t.metadata.get("prospect_id", "unknown")) if isinstance(t.metadata, dict) else "unknown",
                 step=int(t.metadata.get("step", 0)) if isinstance(t.metadata, dict) else 0,
                 ts=datetime.utcnow(),
-                rank=1,
+                rank=int(rank_map.get(idx, 1)),
                 group_size=len(group.trajectories),
-                rubric={"llm_judge": float(t.reward)},
+                rubric={"llm_judge": float(s)},
             )
             append_event(fb)
 
@@ -114,6 +112,7 @@ async def score_trajectory_group(group: art.TrajectoryGroup) -> art.TrajectoryGr
     logger.info("Using offline fallback scoring")
     trajectories = []
     traj_ids = []
+    offline_scores: list[float] = []
     for t in group.trajectories:
         messages = t.messages()
         subject = ""
@@ -123,7 +122,15 @@ async def score_trajectory_group(group: art.TrajectoryGroup) -> art.TrajectoryGr
             subject = t.final_email.subject
             body = t.final_email.body
             citations = t.final_email.citations
-        t.reward = _offline_score_email(subject, body, citations)
+        score = _offline_score_email(subject, body, citations)
+        offline_scores.append(float(score))
+
+    # Ranks for offline as well
+    order = sorted(range(len(offline_scores)), key=lambda i: -offline_scores[i])
+    rank_map = {idx: rank + 1 for rank, idx in enumerate(order)}
+
+    for idx, t in enumerate(group.trajectories):
+        t.reward = float(offline_scores[idx])
         trajectories.append(t)
 
         tid = hash_trajectory(t.messages_and_choices)
@@ -133,9 +140,9 @@ async def score_trajectory_group(group: art.TrajectoryGroup) -> art.TrajectoryGr
             prospect_id=str(t.metadata.get("prospect_id", "unknown")) if isinstance(t.metadata, dict) else "unknown",
             step=int(t.metadata.get("step", 0)) if isinstance(t.metadata, dict) else 0,
             ts=datetime.utcnow(),
-            rank=1,
+            rank=int(rank_map.get(idx, 1)),
             group_size=len(group.trajectories),
-            rubric={"offline_reward": float(t.reward)},
+            rubric={"offline_reward": float(offline_scores[idx])},
         )
         append_event(fb)
 

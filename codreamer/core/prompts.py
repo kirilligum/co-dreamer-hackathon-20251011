@@ -18,6 +18,7 @@ SYSTEM_PROMPT = (
     "Output requirements:\n"
     "- Write the email yourself (subject + body).\n"
     "- Be concise, specific, and benefit-led; include a clear CTA.\n"
+    "- Use English for all outputs.\n"
     "- Ground claims in the KG evidence you retrieved.\n"
     "- Always cite all node_ids used via finalize_email.\n\n"
 
