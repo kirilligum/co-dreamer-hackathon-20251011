@@ -109,7 +109,7 @@ uv run learn-loop
 uv run learn-loop 5
 
 # 10 iterations with depth (max tool-calling turns) = 6
-uv run learn-loop 10 6
+uv run learn-loop 20 3
 
 # 2 iterations with max depth 3
 uv run learn-loop 2 3
@@ -128,6 +128,35 @@ results/runs/<run-id>/
   iter1_rewards_per_traj.jsonl
   iter1_node_scores.json
   ... (iter2_*, iter3_*, ...)
+```
+
+### Streamlit Dashboard
+
+Interactive dashboard to browse runs and visualize metrics.
+
+Run (auto-selects latest run; choose others in the sidebar):
+
+```bash
+# Pick a specific port
+uv run streamlit run codreamer/scripts/dashboard.py --server.headless true --server.port 8501
+
+# Or pick any free port automatically
+uv run streamlit run codreamer/scripts/dashboard.py --server.headless true --server.port 0
+```
+
+What you’ll see:
+
+- Rewards over iterations (mean reward line plot)
+- Emails per iteration (subject, body, citations)
+- Artifact list for quick inspection
+
+Troubleshooting ports:
+
+```bash
+lsof -iTCP:8501 -sTCP:LISTEN
+kill -TERM <PID>
+# Or simply use a random free port
+uv run streamlit run codreamer/scripts/dashboard.py --server.port 0
 ```
 
 ### REST API
