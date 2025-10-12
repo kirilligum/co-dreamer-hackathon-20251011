@@ -13,6 +13,7 @@ import asyncio
 from datetime import datetime
 import json
 from pathlib import Path
+from statistics import mean, median
 
 import art
 from loguru import logger
@@ -258,6 +259,63 @@ async def _step5_evaluate() -> None:
     logger.info(f"Wrote eval trajectories to {out}")
 
 
+# ------------------------
+# Metrics & Visualization data
+# ------------------------
+
+def _write_json(path: Path, obj: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as f:
+        f.write(json.dumps(obj) + "\n")
+
+@weave.op()
+def log_rewards_metrics(iteration: int, judged_groups: list[art.TrajectoryGroup]) -> dict:
+    rewards: list[float] = []
+    per_traj: list[dict] = []
+    for g in judged_groups:
+        for t in g.trajectories:
+            r = float(getattr(t, "reward", 0.0))
+            rewards.append(r)
+            per_traj.append({
+                "reward": r,
+                "prospect_id": str(getattr(t, "metadata", {}).get("prospect_id", "")) if isinstance(getattr(t, "metadata", {}), dict) else "",
+                "auto_finalized": bool(getattr(t, "metadata", {}).get("auto_finalized", False)) if isinstance(getattr(t, "metadata", {}), dict) else False,
+            })
+    metrics = {
+        "iteration": iteration,
+        "count": len(rewards),
+        "mean": mean(rewards) if rewards else 0.0,
+        "median": median(rewards) if rewards else 0.0,
+        "min": min(rewards) if rewards else 0.0,
+        "max": max(rewards) if rewards else 0.0,
+        "ts": datetime.utcnow().isoformat(),
+    }
+    # Persist JSON snapshots
+    _write_json(_iter_path(iteration, "rewards_metrics"), metrics)
+    # Per-trajectory rewards (JSONL)
+    per_path = _iter_path(iteration, "rewards_per_traj")
+    per_path.parent.mkdir(parents=True, exist_ok=True)
+    with per_path.open("w", encoding="utf-8") as f:
+        for row in per_traj:
+            f.write(json.dumps(row) + "\n")
+    return metrics
+
+@weave.op()
+def log_node_scores_snapshot(iteration: int) -> dict:
+    scores_path = PROJECT_ROOT / "data" / "node_scores.json"
+    snapshot = {"iteration": iteration, "ts": datetime.utcnow().isoformat(), "scores": {}}
+    if scores_path.exists():
+        try:
+            with scores_path.open("r", encoding="utf-8") as f:
+                snapshot["scores"] = json.load(f)
+        except Exception:
+            snapshot["scores"] = {}
+    # Save a copy per iteration for diff/visualization
+    out = PROJECT_ROOT / "data" / f"iter{iteration}_node_scores.json"
+    _write_json(out, snapshot)
+    return snapshot
+
+
 def main_step1() -> None:
     asyncio.run(_step1_generate())
 
@@ -290,12 +348,14 @@ async def run_learning_loop(num_iters: int = 3) -> None:
         logger.info(f"[Loop {it}/{num_iters}] Step 2 - Score")
         judged = await score_trajectories(groups)
         write_groups(judged, _iter_path(it, "step2_groups"))
+        log_rewards_metrics(it, judged)
 
         logger.info(f"[Loop {it}/{num_iters}] Step 3 - GRPO")
         await grpo_update(model, judged)
 
         logger.info(f"[Loop {it}/{num_iters}] Step 4 - Update KG")
         update_kg_weights(judged)
+        log_node_scores_snapshot(it)
 
 def main_loop() -> None:
     asyncio.run(run_learning_loop())
