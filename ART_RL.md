@@ -2,6 +2,15 @@
 
 This project uses the ART library for GRPO-style reinforcement learning updates. We create a `TrainableModel`, register a serverless backend, generate trajectory groups, score them, and call `model.train(...)` with `TrainConfig`.
 
+Features used:
+- `TrainableModel` with `ServerlessBackend` registration
+- Trajectory types: `Trajectory`, `TrajectoryGroup` for rollouts and batching
+- GRPO updates via `model.train(judged_groups, config=TrainConfig(...))`
+- Dataset iteration with `art.utils.iterate_dataset`
+- Checkpoint management via `model.delete_checkpoints()` in minimal loop
+- Inference via model’s OpenAI-compatible endpoint in `rollout`
+- Env configuration: `ART_PROJECT`, `ART_MODEL_NAME`, `ART_BASE_MODEL`
+
 ### Model creation and registration
 
 ```13:23:codreamer/training/model_setup.py

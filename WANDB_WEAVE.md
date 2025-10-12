@@ -2,6 +2,13 @@
 
 This project uses W&B Weave to trace pipeline steps and capture metrics. We initialize Weave from an environment variable and wrap key steps with `@weave.op()` for lineage and run graphs.
 
+Features used:
+- Weave project init via `WEAVE_PROJECT` and `weave.init(...)`
+- `@weave.op()` to trace pipeline steps: `generate_trajectories`, `score_trajectories`, `grpo_update`, `evaluate`, `run_learning_loop`
+- Traced metrics ops: `log_rewards_metrics`, `log_node_scores_snapshot`
+- Traced agent rollout via `training/rollout.py::rollout`
+- Graceful offline fallback if initialization fails
+
 ### Initialization
 
 ```126:134:codreamer/scripts/pipeline.py
