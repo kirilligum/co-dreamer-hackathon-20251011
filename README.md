@@ -200,6 +200,59 @@ curl -X POST http://localhost:8000/learn-loop \
 
 Response contains a `run_id` and `results_path` where artifacts are written under `results/runs/<run-id>/`.
 
+### Frontend integration (webhook)
+
+Set an endpoint in your frontend to receive updates after each iteration (baseline iter0 and every iter i). Then set `FRONTEND_URL` before running the loop.
+
+Environment variable:
+
+```bash
+export FRONTEND_URL=http://localhost:3000/api/final-email
+```
+
+Payload schema (JSON):
+
+```json
+{
+  "run_id": "<string>",
+  "final_email": {
+    "subject": "<string>",
+    "body": "<string>",
+    "citations": ["<node_id>"]
+  },
+  "node_scores": { "<node_id>": 0.0 }
+}
+```
+
+Minimal Next.js (Node) API route example:
+
+```ts
+// pages/api/final-email.ts
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') return res.status(405).end();
+  const { run_id, final_email, node_scores } = req.body ?? {};
+  // TODO: store/display in your app state or DB
+  console.log('run_id', run_id);
+  console.log('final_email', final_email);
+  console.log('node_scores', node_scores);
+  return res.status(200).json({ ok: true });
+}
+```
+
+Test your endpoint:
+
+```bash
+curl -X POST "$FRONTEND_URL" \
+  -H "Content-Type: application/json" \
+  --data '{
+    "run_id":"test-run",
+    "final_email":{"subject":"Hello","body":"World","citations":["Customer Job"]},
+    "node_scores":{"Customer Job":1.0}
+  }'
+```
+
 ## Feedback System
 
 - Feedback types: RULER, HumanPreference, OnlineOutcome (see `feedback/feedback.py`).
