@@ -29,12 +29,23 @@ Customer Job + Product Feature
 
 ### Start the Dream API Server
 
+**Using Mastra Workflow (Recommended):**
+
+```bash
+cd mastra
+USE_WORKFLOW=true npx tsx src/dreamer/server.ts
+```
+
+**Using Legacy BFS:**
+
 ```bash
 cd mastra
 npx tsx src/dreamer/server.ts
 ```
 
 The server runs on **http://localhost:3457**
+
+> **Note:** The Mastra workflow implementation provides better observability with step-by-step logging and structured execution. Both implementations produce identical output formats.
 
 ### Check Server Status
 
@@ -52,7 +63,7 @@ curl http://localhost:3457/health
 
 ### Generate a Knowledge Graph
 
-**Endpoint:** `POST /dream`
+**Endpoint:** `POST /api/v1/dream`
 
 **Parameters:**
 - `customer` (required): The customer job or need
@@ -63,7 +74,7 @@ curl http://localhost:3457/health
 **Example 1: Basic Request**
 
 ```bash
-curl -X POST http://localhost:3457/dream \
+curl -X POST http://localhost:3457/api/v1/dream \
   -H "Content-Type: application/json" \
   -d '{
     "customer": "Pearls of Wisdom, a company that generates synthetic data sets for training AI models.",
@@ -74,7 +85,7 @@ curl -X POST http://localhost:3457/dream \
 **Example 2: Custom Parameters**
 
 ```bash
-curl -X POST http://localhost:3457/dream \
+curl -X POST http://localhost:3457/api/v1/dream \
   -H "Content-Type: application/json" \
   -d '{
     "customer": "Pearls of Wisdom, a company that generates synthetic data sets for training AI models.",
@@ -87,7 +98,7 @@ curl -X POST http://localhost:3457/dream \
 **Example 3: Save to File**
 
 ```bash
-curl -X POST http://localhost:3457/dream \
+curl -X POST http://localhost:3457/api/v1/dream \
   -H "Content-Type: application/json" \
   -d '{
     "customer": "Pearls of Wisdom, a company that generates synthetic data sets for training AI models.",
@@ -187,7 +198,7 @@ curl http://localhost:8000/
 
 ```bash
 # Step 1: Generate knowledge graph with Dream API
-curl -X POST http://localhost:3457/dream \
+curl -X POST http://localhost:3457/api/v1/dream \
   -H "Content-Type: application/json" \
   -d '{
     "customer": "Pearls of Wisdom, a company that generates synthetic data sets for training AI models.",
@@ -320,16 +331,16 @@ cat codreamer/results/runs/api-20251012-103045-a3f2e1/iter1_rewards_metrics.json
 This example shows the complete workflow: generating a knowledge graph for Pearls of Wisdom (customer) and Weights & Biases Weave (product), then using it to train an agent that generates personalized sales emails.
 
 ```bash
-# 1. Start Dream API (Terminal 1)
+# 1. Start Dream API with Mastra Workflow (Terminal 1)
 cd mastra
-npx tsx src/dreamer/server.ts
+USE_WORKFLOW=true npx tsx src/dreamer/server.ts
 
 # 2. Start CoDreamer API (Terminal 2)
 cd ..
 python -m uvicorn codreamer.scripts.api:app --host 0.0.0.0 --port 8000
 
 # 3. Generate Knowledge Graph (Terminal 3)
-curl -X POST http://localhost:3457/dream \
+curl -X POST http://localhost:3457/api/v1/dream \
   -H "Content-Type: application/json" \
   -d '{
     "customer": "Pearls of Wisdom, a company that generates synthetic data sets for training AI models.",

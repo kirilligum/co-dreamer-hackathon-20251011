@@ -2,6 +2,74 @@
 
 A TypeScript-based microservice that autonomously expands knowledge graphs using AI to explore connections between customers and products.
 
+## Architecture
+
+The Knowledge Dreamer now supports two implementations:
+
+### 🆕 Mastra Workflow (Recommended)
+A structured, observable workflow using [Mastra](https://mastra.ai) for better maintainability and debugging.
+
+### 🔧 Legacy BFS
+The original breadth-first search implementation.
+
+## Workflow Architecture
+
+```mermaid
+flowchart TB
+    Start([API Request]) --> Check{USE_WORKFLOW?}
+
+    Check -->|true| WF[Mastra Workflow]
+    Check -->|false| Legacy[Legacy BFS]
+
+    WF --> Step1[Step 1: Initialize Anchors]
+    Step1 --> Anchor1[Customer Job Node]
+    Step1 --> Anchor2[Product Feature Node]
+
+    Step1 --> Step2[Step 2: BFS Expansion]
+    Step2 --> Gen1[Generation 1<br/>1 node → 2 children]
+    Gen1 --> Gen2[Generation 2<br/>2 nodes → 4 children]
+    Gen2 --> Gen3[Generation 3<br/>4 nodes → 8 children]
+
+    Step2 --> Step3[Step 3: Connect to Product]
+    Step3 --> Connect[Link leaf nodes<br/>to Product Feature]
+
+    Step3 --> Step4[Step 4: Finalize]
+    Step4 --> Meta[Add metadata<br/>& timing info]
+
+    Legacy --> BFS[BFS Algorithm]
+    BFS --> LegacyGen[Generate nodes<br/>level by level]
+
+    Meta --> Response([JSON Response])
+    LegacyGen --> Response
+
+    style WF fill:#4CAF50
+    style Legacy fill:#FFC107
+    style Step1 fill:#2196F3
+    style Step2 fill:#2196F3
+    style Step3 fill:#2196F3
+    style Step4 fill:#2196F3
+```
+
+### Workflow Steps
+
+**Step 1: Initialize Anchors**
+- Creates "Customer Job" and "Product Feature" anchor nodes
+- Sets up the graph foundation
+
+**Step 2: BFS Expansion**
+- Iteratively generates child nodes using LLM
+- Each generation: parent nodes → N children per parent
+- Default: 2 children × 3 generations = 14 nodes (+ 2 anchors)
+
+**Step 3: Connect to Product**
+- Identifies leaf nodes (nodes with no children)
+- Creates edges from leaves to "Product Feature" anchor
+- Completes the customer→product journey
+
+**Step 4: Finalize**
+- Adds metadata (node count, generation time, etc.)
+- Returns complete knowledge graph
+
 ## Quick Start
 
 ### 1. Install Dependencies
@@ -30,6 +98,14 @@ Get your API key from [Google AI Studio](https://makersuite.google.com/app/apike
 
 ### 3. Start the Service
 
+**Using Mastra Workflow (Recommended):**
+
+```bash
+USE_WORKFLOW=true pnpm dreamer
+```
+
+**Using Legacy BFS:**
+
 ```bash
 pnpm dreamer
 ```
@@ -37,6 +113,14 @@ pnpm dreamer
 The service will start on `http://localhost:3457`
 
 **Note**: The `.env` file is gitignored and will never be committed to your repository.
+
+### Why Use Mastra Workflow?
+
+✅ **Better Observability**: Each step logs its progress
+✅ **Easier Debugging**: Clear separation of concerns
+✅ **Type Safety**: Validated inputs/outputs with Zod schemas
+✅ **Maintainability**: Structured workflow vs monolithic function
+✅ **Future-Ready**: Easy to add features like suspend/resume, streaming, etc.
 
 ## API Usage
 
@@ -343,13 +427,26 @@ curl -s -X POST http://localhost:3457/api/v1/dream \
 mastra/
 ├── src/
 │   └── dreamer/
-│       ├── types.ts           # Data structures and interfaces
-│       ├── llm-service.ts     # Gemini AI integration
-│       ├── dreamer-service.ts # BFS expansion algorithm
-│       ├── server.ts          # Hono API server
-│       └── README.md          # Detailed technical docs
-└── README.md                  # This file
+│       ├── types.ts              # Data structures and interfaces
+│       ├── llm-service.ts        # Gemini AI integration
+│       ├── dreamer-service.ts    # Legacy BFS expansion algorithm
+│       ├── dream-workflow.ts     # 🆕 Mastra workflow implementation
+│       ├── mastra-instance.ts    # 🆕 Mastra configuration
+│       ├── server.ts             # Hono API server (supports both implementations)
+│       └── README.md             # Detailed technical docs
+└── README.md                     # This file
 ```
+
+### Implementation Comparison
+
+| Feature | Mastra Workflow | Legacy BFS |
+|---------|----------------|------------|
+| **Observability** | ✅ Step-by-step logs | ⚠️ Monolithic logs |
+| **Type Safety** | ✅ Zod schemas | ⚠️ TypeScript only |
+| **Maintainability** | ✅ Modular steps | ⚠️ Single function |
+| **Debugging** | ✅ Clear step boundaries | ⚠️ Stack traces |
+| **Performance** | ~10s for 2×3 graph | ~10s for 2×3 graph |
+| **Output** | ✅ Same format | ✅ Same format |
 
 ## AI Configuration
 
