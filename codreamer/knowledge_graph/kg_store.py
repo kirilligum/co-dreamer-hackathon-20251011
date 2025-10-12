@@ -18,11 +18,23 @@ class KnowledgeGraphStore:
         with path.open("r", encoding="utf-8") as f:
             data = json.load(f)
         # nodes: id -> content
-        self.nodes: dict[str, str] = {n["id"]: n.get("content", "") for n in data}
+        self.nodes: dict[str, str] = {n.get("id", ""): n.get("content", "") for n in data if n.get("id")}
         # adjacency: id -> list[(target, label)]
-        self.out_edges: dict[str, list[tuple[str, str]]] = {
-            n["id"]: [(e["target"], e.get("label", "")) for e in n.get("edges", [])] for n in data
-        }
+        self.out_edges: dict[str, list[tuple[str, str]]] = {}
+        for n in data:
+            nid = n.get("id")
+            if not nid:
+                continue
+            edges_list = n.get("edges")
+            if edges_list is None:
+                edges_list = n.get("edge", [])  # support alternate key
+            adj: list[tuple[str, str]] = []
+            for e in edges_list or []:
+                tgt = e.get("target") or e.get("target_id") or ""
+                lbl = e.get("label") or e.get("relationship") or ""
+                if tgt:
+                    adj.append((tgt, lbl))
+            self.out_edges[nid] = adj
 
     @weave.op()
     def expand(self, seed_nodes: list[str], goal: str, k: int) -> list[dict[str, Any]]:

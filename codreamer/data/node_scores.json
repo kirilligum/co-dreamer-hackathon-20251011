@@ -1,9 +1,7 @@
 {
-  "prospect:alex": 0.53439,
-  "company:acme": 0.46878000000000003,
-  "industry:fintech": 0.3,
-  "problem:integration": 0.662762119218,
-  "feature:api": 0.67625597484987,
-  "case:fintechco": 0.6531441,
-  "metric:roi": 0.6000000000000001
+  "Annotation Guideline Management": 1.0,
+  "Customer Job": 1.0,
+  "Product Feature (Weave Feedback System)": 1.0,
+  "Human-in-the-Loop Workflow": 1.0,
+  "Process for Quality Validation": 1.0
 }

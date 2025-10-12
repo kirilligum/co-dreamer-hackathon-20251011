@@ -1,50 +1,57 @@
 [
   {
-    "id": "prospect:alex",
-    "content": "Prospect Alex Rivera, VP Engineering at Acme FinTech",
-    "edges": [
-      { "target": "company:acme", "label": "works_at" },
-      { "target": "problem:integration", "label": "faces" }
+    "id": "Customer Job",
+    "content": "Generates high quality synthetic data for LLM pre-training from marketing content like landing pages, blogsposts, user reviews, and news",
+    "edge": [
+      {
+        "target_id": "Process for Quality Validation",
+        "relationship": "has process",
+        "rationale": "The company's claim of 'high quality' implies an internal process to validate its own product. Weave's feedback and evaluation tools are directly applicable to building and running this validation process."
+      }
     ]
   },
   {
-    "id": "company:acme",
-    "content": "Acme FinTech, mid-market financial services platform",
-    "edges": [
-      { "target": "prospect:alex", "label": "employs" },
-      { "target": "industry:fintech", "label": "in_industry" }
+    "id": "Process for Quality Validation",
+    "content": "Validates synthetic data quality by evaluating the performance of models trained on it",
+    "edge": [
+      {
+        "target_id": "Human-in-the-Loop Workflow",
+        "relationship": "relies on",
+        "rationale": "For nuanced LLM tasks, automated metrics are often insufficient. A robust validation process requires qualitative human judgment, highlighting a direct need for Weave’s UI-based feedback system."
+      }
     ]
   },
   {
-    "id": "industry:fintech",
-    "content": "FinTech industry context: compliance, integrations, speed",
-    "edges": []
-  },
-  {
-    "id": "problem:integration",
-    "content": "Integration overhead with legacy systems",
-    "edges": [
-      { "target": "feature:api", "label": "can_be_solved_by" },
-      { "target": "metric:roi", "label": "impacts" }
+    "id": "Human-in-the-Loop Workflow",
+    "content": "Requires a human-in-the-loop workflow for qualitative assessment of model outputs",
+    "edge": [
+      {
+        "target_id": "Annotation Guideline Management",
+        "relationship": "necessitates",
+        "rationale": "A human-in-the-loop workflow is only effective if the feedback is consistent. This establishes the need for a formal system of instructions (a rubric) for the human reviewers, which points to a need for Weave's 'structured data' feedback type."
+      }
     ]
   },
   {
-    "id": "feature:api",
-    "content": "Robust APIs and SDKs reduce integration time by ~60%",
-    "edges": [
-      { "target": "case:fintechco", "label": "supported_by" }
+    "id": "Annotation Guideline Management",
+    "content": "Defines and manages annotation guidelines and rubrics for reviewers",
+    "edge": [
+      {
+        "target_id": "Product Feature (Weave Feedback System)",
+        "relationship": "is solved by",
+        "rationale": "The need to collect, manage, and structure human annotations and feedback is a direct use case for a dedicated product feature."
+      }
     ]
   },
   {
-    "id": "case:fintechco",
-    "content": "FinTechCo cut onboarding from 6 weeks to 2 with our APIs",
-    "edges": [
-      { "target": "feature:api", "label": "supports" }
+    "id": "Product Feature (Weave Feedback System)",
+    "content": "Efficiently evaluating LLM applications requires robust tooling to collect and analyze feedback. W&B Weave provides an integrated feedback system, allowing users to provide call feedback directly through the UI or programmatically via the SDK.",
+    "edge": [
+      {
+        "target_id": "Product",
+        "relationship": "is a feature of",
+        "rationale": "This specific feedback system is a core component of the overall product offering."
+      }
     ]
-  },
-  {
-    "id": "metric:roi",
-    "content": "Typical 3-5x ROI within first year",
-    "edges": []
   }
 ]

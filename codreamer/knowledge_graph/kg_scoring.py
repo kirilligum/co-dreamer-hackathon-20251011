@@ -8,6 +8,7 @@ from loguru import logger
 import weave
 
 from ..core.config import PROJECT_ROOT
+from .kg_store import KnowledgeGraphStore
 
 
 class KGScorer:
@@ -17,6 +18,16 @@ class KGScorer:
         self.path = scores_path or (PROJECT_ROOT / "data" / "node_scores.json")
         with self.path.open("r", encoding="utf-8") as f:
             self.scores: dict[str, float] = json.load(f)
+        # Reconcile with graph nodes (drop unknown keys, add missing with default 1.0, clamp values)
+        kg = KnowledgeGraphStore()
+        graph_ids = set(kg.nodes.keys())
+        reconciled: dict[str, float] = {}
+        for nid in graph_ids:
+            val = float(self.scores.get(nid, 1.0))
+            reconciled[nid] = max(0.0, min(1.0, val))
+        self.scores = reconciled
+        with self.path.open("w", encoding="utf-8") as f:
+            json.dump(self.scores, f, indent=2)
 
     @weave.op()
     def rank_nodes(self, query: str, nodes: list[dict[str, Any]]) -> list[str]:

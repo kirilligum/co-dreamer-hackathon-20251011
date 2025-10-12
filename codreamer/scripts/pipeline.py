@@ -14,6 +14,8 @@ from datetime import datetime
 import json
 from pathlib import Path
 from statistics import mean, median
+import os
+import uuid
 
 import art
 from loguru import logger
@@ -135,14 +137,22 @@ def main() -> None:
 # Persistence helpers
 # ------------------------
 
+_RUN_ID: str | None = None
+
+def _results_root() -> Path:
+    base = PROJECT_ROOT / "results"
+    if _RUN_ID:
+        return base / "runs" / _RUN_ID
+    return base
+
 def _groups_path(step: int) -> Path:
-    return PROJECT_ROOT / "results" / f"step{step}_groups.jsonl"
+    return _results_root() / f"step{step}_groups.jsonl"
 
 def _eval_path() -> Path:
-    return PROJECT_ROOT / "results" / "step5_eval.jsonl"
+    return _results_root() / "step5_eval.jsonl"
 
 def _iter_path(iteration: int, suffix: str) -> Path:
-    return PROJECT_ROOT / "results" / f"iter{iteration}_{suffix}.jsonl"
+    return _results_root() / f"iter{iteration}_{suffix}.jsonl"
 
 def _traj_to_dict(t: ProjectTrajectory) -> dict:
     fe = None
@@ -311,7 +321,7 @@ def log_node_scores_snapshot(iteration: int) -> dict:
         except Exception:
             snapshot["scores"] = {}
     # Save a copy per iteration for diff/visualization
-    out = PROJECT_ROOT / "results" / f"iter{iteration}_node_scores.json"
+    out = _results_root() / f"iter{iteration}_node_scores.json"
     _write_json(out, snapshot)
     return snapshot
 
@@ -336,9 +346,15 @@ def main_step5() -> None:
 # ------------------------
 
 @weave.op()
-async def run_learning_loop(num_iters: int = 3) -> None:
+async def run_learning_loop(num_iters: int = 3, run_id: str | None = None) -> None:
     weave.init("pierg-org/codreamer")
     setup_logging()
+    global _RUN_ID
+    if run_id is None:
+        ts = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+        run_id = f"run-{ts}-{uuid.uuid4().hex[:6]}"
+    _RUN_ID = run_id
+    logger.info(f"[Loop] Results root: {_results_root()}")
     model = await create_and_register_model()
     for it in range(1, num_iters + 1):
         logger.info(f"[Loop {it}/{num_iters}] Step 1 - Generate")
@@ -358,7 +374,21 @@ async def run_learning_loop(num_iters: int = 3) -> None:
         log_node_scores_snapshot(it)
 
 def main_loop() -> None:
-    asyncio.run(run_learning_loop())
+    # Accept number of iterations from CLI arg or env NUM_ITERS; optional RUN_ID env
+    iters = 3
+    if len(os.sys.argv) > 1:
+        try:
+            iters = int(os.sys.argv[1])
+        except Exception:
+            pass
+    env_iters = os.getenv("NUM_ITERS")
+    if env_iters:
+        try:
+            iters = int(env_iters)
+        except Exception:
+            pass
+    run_id = os.getenv("RUN_ID")
+    asyncio.run(run_learning_loop(num_iters=iters, run_id=run_id))
 
 
 if __name__ == "__main__":
