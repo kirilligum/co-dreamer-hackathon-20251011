@@ -140,8 +140,6 @@ Run (auto-selects latest run; choose others in the sidebar):
 # Pick a specific port
 uv run streamlit run codreamer/scripts/dashboard.py --server.headless true --server.port 8501
 
-# Or pick any free port automatically
-uv run streamlit run codreamer/scripts/dashboard.py --server.headless true --server.port 0
 ```
 
 What you’ll see:
