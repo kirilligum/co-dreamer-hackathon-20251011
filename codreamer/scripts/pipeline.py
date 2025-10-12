@@ -22,6 +22,8 @@ from urllib.error import URLError, HTTPError
 import art
 from loguru import logger
 import weave
+import os
+from dotenv import load_dotenv
 
 from ..core.config import GROUPS_PER_STEP, LEARNING_RATE, MAX_STEPS, PROJECT_ROOT, ROLLOUTS_PER_GROUP, setup_logging
 from ..core.data_models import FinalEmail
@@ -111,7 +113,9 @@ async def evaluate(model: art.Model) -> list[ProjectTrajectory]:
 @weave.op()
 async def run_pipeline() -> None:
     try:
-        weave.init("pierg-org/codreamer")
+        load_dotenv()
+        weave_project = os.getenv("WEAVE_PROJECT", "pierg-org/codreamer")
+        weave.init(weave_project)
     except Exception as e:
         logger.warning(f"Failed to initialize Weave (W&B offline mode): {e}")
     setup_logging()
@@ -361,6 +365,26 @@ def _notify_frontend(run_id: str, final_email: dict, node_scores: dict) -> None:
         logger.warning(f"[Notify] Failed to POST to FRONTEND_URL: {e}")
 
 
+def _init_node_scores_all_ones() -> None:
+    """Initialize node_scores.json to 1.0 for all nodes in current graph (overwrite)."""
+    graph_path = PROJECT_ROOT / "data" / "graph.json"
+    scores_path = PROJECT_ROOT / "data" / "node_scores.json"
+    try:
+        with graph_path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+        scores: dict[str, float] = {}
+        for n in data:
+            nid = n.get("id")
+            if nid:
+                scores[nid] = 1.0
+        scores_path.parent.mkdir(parents=True, exist_ok=True)
+        with scores_path.open("w", encoding="utf-8") as f:
+            json.dump(scores, f, indent=2)
+        logger.info("[Init] node_scores.json reset to all ones for current graph")
+    except Exception as e:
+        logger.warning(f"[Init] Failed to reset node_scores.json: {e}")
+
+
 def main_step1() -> None:
     asyncio.run(_step1_generate())
 
@@ -383,7 +407,9 @@ def main_step5() -> None:
 @weave.op()
 async def run_learning_loop(num_iters: int = 3, run_id: str | None = None, depth: int | None = None) -> None:
     try:
-        weave.init("pierg-org/codreamer")
+        load_dotenv()
+        weave_project = os.getenv("WEAVE_PROJECT", "pierg-org/codreamer")
+        weave.init(weave_project)
     except Exception as e:
         logger.warning(f"Failed to initialize Weave (W&B offline mode): {e}")
     setup_logging()
@@ -395,8 +421,9 @@ async def run_learning_loop(num_iters: int = 3, run_id: str | None = None, depth
     logger.info(f"[Loop] Results root: {_results_root()}")
     model = await create_and_register_model()
 
-    # Baseline snapshot (iteration 0): node scores + baseline email
-    logger.info("[Loop 0] Snapshot node scores and generate baseline email")
+    # Baseline snapshot (iteration 0): reset scores, snapshot node scores + baseline email
+    logger.info("[Loop 0] Reset node scores, snapshot, and generate baseline email")
+    _init_node_scores_all_ones()
     base_snapshot = log_node_scores_snapshot(0)
     scenarios = load_synthetic_scenarios()
     baseline_traj = await rollout(model, ScenarioInput(step=0, scenario=scenarios[0]))

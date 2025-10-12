@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 
 from loguru import logger
 import weave
+import os
+from dotenv import load_dotenv
 
 from ..core.config import FEEDBACK_WRITE_PATH
 from ..feedback.feedback import (
@@ -22,7 +24,9 @@ from ..feedback.feedback import (
 
 
 def main() -> None:
-    weave.init("pierg-org/codreamer")
+    load_dotenv()
+    weave_project = os.getenv("WEAVE_PROJECT", "pierg-org/codreamer")
+    weave.init(weave_project)
     logger.remove()
     logger.add(lambda m: print(m, end=""), level="INFO")
 

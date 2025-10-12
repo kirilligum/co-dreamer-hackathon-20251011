@@ -41,11 +41,23 @@ Install the package and dependencies using uv:
 uv sync
 ```
 
+Copy the example environment file and edit values as needed:
+
+```bash
+cp .env_example .env
+```
+
+All scripts automatically load variables from `.env` via python-dotenv.
+
 Optional environment variables:
 
 ```bash
-export OPENAI_API_KEY=...   # enables LLMJudge scoring in Step 2
-export WANDB_API_KEY=...    # enables serverless logging/training
+export OPENAI_API_KEY=...                # enables LLMJudge scoring in Step 2
+export WANDB_API_KEY=...                 # enables serverless logging/training
+export WEAVE_PROJECT="my-org/my-project" # defaults to "pierg-org/codreamer"
+export ART_PROJECT="codreamer"          # ART project name (default: "codreamer")
+export ART_MODEL_NAME="model"           # ART model name (default: "model")
+export ART_BASE_MODEL="Qwen/Qwen2.5-14B-Instruct"  # base model (default as shown)
 ```
 
 ## Usage
@@ -97,7 +109,7 @@ uv run learn-loop
 uv run learn-loop 5
 
 # 10 iterations with depth (max tool-calling turns) = 6
-uv run learn-loop 1 6
+uv run learn-loop 10 6
 
 # 2 iterations with max depth 3
 uv run learn-loop 2 3

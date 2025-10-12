@@ -148,3 +148,12 @@
 {"trajectory_id": "2bf278f9a3f21210908ffb21ab1de097b3f2cce5", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 18:06:38.694369", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 1.0}}
 {"trajectory_id": "923c8e81b4489c97585b81b726abd0bcc2d29347", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 18:06:38.697018", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 0.5}}
 {"trajectory_id": "20bbd1869d652c4c62f3556bdb3584b5a85a56e0", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 18:06:38.698856", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 0.0}}
+{"trajectory_id": "0c55a11ae120dd9bfdb9412973206c8a4719bfae", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 18:25:06.235051", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 1.0}}
+{"trajectory_id": "0e89dfa0fc6797f4b0ef0510ffe6b6065b80ac13", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 18:25:06.236640", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 0.5}}
+{"trajectory_id": "a1b6764b9492eba50cdba1282db389f9f6de9932", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 18:25:06.237875", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 0.0}}
+{"trajectory_id": "6f799421238311c9a45db3cd2797ae1f6d735d7b", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 18:28:02.120488", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 1.0}}
+{"trajectory_id": "6a1a7601cbdb7e56f4d2b3d42bcced48d9b7202b", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 18:28:02.122734", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 0.5}}
+{"trajectory_id": "87b79193267b1659d234ba0384ebc18e0a088ea4", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 18:28:02.123914", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 0.0}}
+{"trajectory_id": "250f493ad732dc8b78815cb188d4f97f6a19aafd", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 18:30:54.387237", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 1.0}}
+{"trajectory_id": "d0d1919e6b9c3bdaeea241a84fbce72a9535e225", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 18:30:54.388863", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 0.5}}
+{"trajectory_id": "a83ff8d6bf76d537d0cc892f49d1ed2e2ee675b0", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 18:30:54.389665", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 0.0}}
