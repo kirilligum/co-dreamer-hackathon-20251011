@@ -192,14 +192,14 @@ curl -X POST http://localhost:3457/api/v1/dream \
 
 ## Visualizing Knowledge Graphs
 
-### Quick PNG Generation
+### Quick Visualization Generation
 
 The simplest way to visualize your knowledge graph:
 
 ```bash
-# Takes a JSON file, outputs a PNG with the same name
+# Takes a JSON file, outputs PNG, SVG, and Mermaid diagram
 npx tsx scripts/graph-to-png.ts knowledge-graph.json
-# Output: knowledge-graph.png (and knowledge-graph.mmd)
+# Output: knowledge-graph.png, knowledge-graph.svg, knowledge-graph.mmd
 ```
 
 **Complete workflow example:**
@@ -215,9 +215,14 @@ curl -X POST http://localhost:3457/api/v1/dream \
     "generations_count_int": 3
   }' > my-graph.json
 
-# 2. Generate PNG visualization (automatically creates .mmd and .png)
+# 2. Generate visualizations (automatically creates .png, .svg, and .mmd)
 npx tsx scripts/graph-to-png.ts my-graph.json
 ```
+
+**Output formats:**
+- **PNG** - Raster image for presentations and documents
+- **SVG** - Vector graphic for web and scalable display
+- **MMD** - Mermaid source for editing and customization
 
 **Diagram Features:**
 - **Blue nodes**: Customer Job (starting anchor)
