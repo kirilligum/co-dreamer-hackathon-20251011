@@ -1,0 +1,39 @@
+[project]
+name = "codreamer"
+version = "0.1.0"
+description = "Sales email RL agent with knowledge graph and multi-source feedback"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "openai>=1.65.5,<2.0.0",
+    "wandb>=0.22.2",
+    "weave>=0.52.9",
+    "openpipe-art==0.5.0",
+    "langchain-core>=0.3.0",
+    "tenacity>=8.2.3",
+    "datasets>=3.0.0",
+    "tqdm>=4.66.0",
+    "pydantic>=2.6.0",
+    "python-dotenv>=1.0.1",
+    "litellm>=1.52.0",
+    "loguru>=0.7.3",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+]
+
+[project.scripts]
+demo = "codreamer.scripts.demo:main"
+train = "codreamer.scripts.train:main"
+pipeline = "codreamer.scripts.pipeline:main"
+add-feedback = "codreamer.scripts.add_feedback:main"
+step1-generate = "codreamer.scripts.pipeline:main_step1"
+step2-score = "codreamer.scripts.pipeline:main_step2"
+step3-grpo = "codreamer.scripts.pipeline:main_step3"
+step4-update-kg = "codreamer.scripts.pipeline:main_step4"
+step5-evaluate = "codreamer.scripts.pipeline:main_step5"
+learn-loop = "codreamer.scripts.pipeline:main_loop"
+api = "codreamer.scripts.api:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
