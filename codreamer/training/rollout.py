@@ -18,6 +18,7 @@ from .tools import (
     finalize_email,
     get_connected_nodes,
     get_relevant_context,
+    propose_email,
 )
 
 
@@ -57,6 +58,7 @@ async def rollout(model: art.Model, scenario_input: ScenarioInput) -> ProjectTra
     tools = [
         get_connected_nodes,
         get_relevant_context,
+        propose_email,
         finalize_email,
     ]
     tools_by_name = {t.__name__: t for t in tools}
@@ -145,7 +147,8 @@ async def rollout(model: art.Model, scenario_input: ScenarioInput) -> ProjectTra
             traj.messages_and_choices.append({
                 "role": "user",
                 "content": (
-                    "You have drafted the subject and body. Call finalize_email(subject, body, citations) now."
+                    "You have drafted the subject and body. Optionally call propose_email(subject, body) to reflect, then "
+                    "call finalize_email(subject, body, citations)."
                 ),
             })
             nudged_now = True

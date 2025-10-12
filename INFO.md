@@ -20,6 +20,10 @@
   - Up to N turns: browse KG via `get_connected_nodes`, pull evidence via `get_relevant_context`, draft subject/body, then call `finalize_email`.  
   - Terminal action is `finalize_email`. Trajectory records tool calls, drafts, and citations.
 
+Graph requirements
+- The KG must always include two anchor nodes: `Customer Job` (seed for exploration) and `Product Feature` (target endpoint for evidence paths).  
+- `get_relevant_context` biases evidence to nodes on paths reaching a `Product Feature` node.
+
 
 - **Rewards**:  
     
@@ -43,6 +47,20 @@
   - RULER ranks trajectories per prospect → relative rewards.  
   - Train via GRPO on ranked trajectories; enforce guardrails (compliance, brand tone).  
   - Periodically incorporate human labels and (when available) online metrics into the reward mix.
+
+Continuous learning (learn-loop)
+- Iteration 0 baseline: snapshot node scores and generate a baseline email before any GRPO/KG updates.  
+- For each iteration i: Steps 1–4 (generate, score, GRPO, KG update), then generate an email, snapshot node scores and save both.  
+- After the loop: alias the last iteration email to `final_email.json` under the run folder.  
+- All artifacts are saved under `results/runs/<run-id>/`. If `FRONTEND_URL` is set, each saved email and the current node scores are POSTed to the frontend.
+
+LLMJudge scoring
+- When `OPENAI_API_KEY` is set, a judge LLM returns relative scores for each trajectory’s (subject, body), normalized to [0,1].  
+- Scores are logged as feedback and blended with other signals into the final reward.
+
+Node scoring and reconciliation
+- `node_scores.json` is reconciled on load to match current graph node IDs (drop unknown, add missing with default 1.0, clamp [0,1]).  
+- Updates per iteration use a smoothed rule: `score = clamp(score*0.9 + reward*0.1)` for cited nodes.
 
 
 - **Knowledge graph improvement (co-optimization)**:  

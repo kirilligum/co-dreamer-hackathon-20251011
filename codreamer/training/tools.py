@@ -118,3 +118,10 @@ def brand_tone_check(text: str) -> dict[str, str | bool]:
 def finalize_email(subject: str, body: str, citations: list[str]) -> FinalEmail:
     return FinalEmail(subject=subject, body=body, citations=citations)
 
+
+@weave.op()
+def propose_email(subject: str, body: str) -> dict[str, Any]:
+    """Agent proposes a subject/body draft before finalize_email."""
+    logger.debug("propose_email called")
+    return {"ok": True, "subject_len": len(subject or ""), "body_len": len(body or "")}
+

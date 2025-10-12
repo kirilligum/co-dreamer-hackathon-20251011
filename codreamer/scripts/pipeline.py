@@ -16,6 +16,8 @@ from pathlib import Path
 from statistics import mean, median
 import os
 import uuid
+from urllib import request as urlrequest
+from urllib.error import URLError, HTTPError
 
 import art
 from loguru import logger
@@ -326,6 +328,36 @@ def log_node_scores_snapshot(iteration: int) -> dict:
     return snapshot
 
 
+def _read_node_scores() -> dict:
+    scores_path = PROJECT_ROOT / "data" / "node_scores.json"
+    if scores_path.exists():
+        try:
+            with scores_path.open("r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+    return {}
+
+
+def _notify_frontend(run_id: str, final_email: dict, node_scores: dict) -> None:
+    url = os.getenv("FRONTEND_URL")
+    if not url:
+        return
+    payload = {
+        "run_id": run_id,
+        "final_email": final_email,
+        "node_scores": node_scores,
+    }
+    data = json.dumps(payload).encode("utf-8")
+    req = urlrequest.Request(url, data=data, headers={"Content-Type": "application/json"}, method="POST")
+    try:
+        with urlrequest.urlopen(req, timeout=10) as resp:
+            _ = resp.read()
+            logger.info(f"[Notify] Sent final_email to FRONTEND_URL status={resp.status}")
+    except (URLError, HTTPError) as e:
+        logger.warning(f"[Notify] Failed to POST to FRONTEND_URL: {e}")
+
+
 def main_step1() -> None:
     asyncio.run(_step1_generate())
 
@@ -359,6 +391,26 @@ async def run_learning_loop(num_iters: int = 3, run_id: str | None = None, depth
     _RUN_ID = run_id
     logger.info(f"[Loop] Results root: {_results_root()}")
     model = await create_and_register_model()
+
+    # Baseline snapshot (iteration 0): node scores + baseline email
+    logger.info("[Loop 0] Snapshot node scores and generate baseline email")
+    base_snapshot = log_node_scores_snapshot(0)
+    scenarios = load_synthetic_scenarios()
+    baseline_traj = await rollout(model, ScenarioInput(step=0, scenario=scenarios[0]))
+    if getattr(baseline_traj, "final_email", None) is not None:
+        fe0 = {
+            "subject": baseline_traj.final_email.subject,
+            "body": baseline_traj.final_email.body,
+            "citations": list(baseline_traj.final_email.citations),
+        }
+        # Console
+        logger.info(f"[Iter 0 Email] subject={fe0['subject']}")
+        logger.info(f"[Iter 0 Email] body=\n{fe0['body']}")
+        logger.info(f"[Iter 0 Email] citations={fe0['citations']}")
+        # Persist per-iteration email
+        _write_json(_iter_path(0, "email"), fe0)
+        # Notify frontend
+        _notify_frontend(_RUN_ID or "", fe0, base_snapshot.get("scores", {}))
     for it in range(1, num_iters + 1):
         # Optionally override per-iteration depth (max turns)
         if depth is not None:
@@ -377,7 +429,33 @@ async def run_learning_loop(num_iters: int = 3, run_id: str | None = None, depth
 
         logger.info(f"[Loop {it}/{num_iters}] Step 4 - Update KG")
         update_kg_weights(judged)
-        log_node_scores_snapshot(it)
+        snapshot = log_node_scores_snapshot(it)
+
+        # Generate and persist email for this iteration
+        logger.info(f"[Loop {it}/{num_iters}] Generating iteration email")
+        iter_traj = await rollout(model, ScenarioInput(step=it, scenario=scenarios[0]))
+        if getattr(iter_traj, "final_email", None) is not None:
+            fei = {
+                "subject": iter_traj.final_email.subject,
+                "body": iter_traj.final_email.body,
+                "citations": list(iter_traj.final_email.citations),
+            }
+            logger.info(f"[Iter {it} Email] subject={fei['subject']}")
+            logger.info(f"[Iter {it} Email] body=\n{fei['body']}")
+            logger.info(f"[Iter {it} Email] citations={fei['citations']}")
+            _write_json(_iter_path(it, "email"), fei)
+            _notify_frontend(_RUN_ID or "", fei, snapshot.get("scores", {}))
+
+    # Optionally also save a final_email.json alias for convenience (copies last iter)
+    last_iter_email = _iter_path(num_iters, "email")
+    if last_iter_email.exists():
+        try:
+            with last_iter_email.open("r", encoding="utf-8") as f:
+                last_fe = json.loads(f.read())
+            _write_json(_results_root() / "final_email.json", last_fe)
+            logger.info(f"[Final Email] aliased to {_results_root() / 'final_email.json'}")
+        except Exception:
+            pass
 
 def main_loop() -> None:
     # Accept number of iterations from CLI arg or env NUM_ITERS; optional RUN_ID env

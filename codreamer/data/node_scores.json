@@ -1,7 +1,7 @@
 {
-  "Process for Quality Validation": 0.8466400000000001,
-  "Annotation Guideline Management": 0.8466400000000001,
-  "Product Feature": 1.0,
-  "Human-in-the-Loop Workflow": 0.8466400000000001,
-  "Customer Job": 0.8466400000000001
+  "Human-in-the-Loop Workflow": 0.6932649824160002,
+  "Process for Quality Validation": 0.6932649824160002,
+  "Product Feature": 0.8624399999999999,
+  "Customer Job": 0.7421505600000002,
+  "Annotation Guideline Management": 0.6932649824160002
 }
