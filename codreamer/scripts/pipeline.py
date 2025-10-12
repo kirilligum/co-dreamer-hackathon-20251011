@@ -347,7 +347,10 @@ def main_step5() -> None:
 
 @weave.op()
 async def run_learning_loop(num_iters: int = 3, run_id: str | None = None, depth: int | None = None) -> None:
-    weave.init("pierg-org/codreamer")
+    try:
+        weave.init("pierg-org/codreamer")
+    except Exception as e:
+        logger.warning(f"Failed to initialize Weave (W&B offline mode): {e}")
     setup_logging()
     global _RUN_ID
     if run_id is None:

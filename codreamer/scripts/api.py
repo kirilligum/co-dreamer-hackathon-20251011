@@ -7,7 +7,7 @@ from pathlib import Path
 import uuid
 from typing import Any
 
-from fastapi import BackgroundTasks, FastAPI, HTTPException
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Response
 from pydantic import BaseModel
 from loguru import logger
 
@@ -88,9 +88,28 @@ async def start_learn_loop(req: LearnLoopRequest, background_tasks: BackgroundTa
     return LearnLoopResponse(run_id=run_id, results_path=str(results_dir))
 
 
+@app.get("/")
+async def root() -> dict[str, str]:
+    return {"status": "ok", "service": "codreamer-api"}
+
+
+@app.get("/events")
+async def events() -> Response:
+    """Stub endpoint to silence client polling requests."""
+    return Response(status_code=204)
+
+
+
 def main() -> None:
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # Suppress access logs for cleaner console output
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
+        log_level="info",
+        access_log=False,  # Disable access logs entirely
+    )
 
 
