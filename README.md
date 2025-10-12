@@ -4,13 +4,13 @@
 
 ## Sponsors
 
-### Mastra: Workflow, Sql, RAG, Evals - [README](./mastra/README.md)
+### Mastra: Workflow, Sql, RAG, Evals - [mastra-README](./mastra/README.md)
 
 ### WandB: Tracing, RL scores, Inference - [WandB](./WANDB_WEAVE.md)
 
-### OpenPipe: iterative RL on knowledge graph traversal and query response model
+### OpenPipe: iterative RL on knowledge graph traversal and query response model [OpenPipe Art - README](./ART_RL.md)
 
-### Copilot: UI and batch edit of graph content in UI - [README](./codreamer-agui/README.md)
+### Copilot: UI and batch edit of graph content in UI - [agui-README](./codreamer-agui/README.md)
 
 ### Tavily: websearch fact check
 
