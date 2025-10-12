@@ -57,6 +57,23 @@ def _write_graph(graph: list[dict[str, Any]]) -> None:
         json.dump(graph, f, indent=2)
 
 
+def _reset_node_scores() -> None:
+    # Reset node scores to 1.0 for all nodes present in the graph
+    try:
+        with _graph_path().open("r", encoding="utf-8") as f:
+            data = json.load(f)
+        scores = {}
+        for n in data:
+            nid = n.get("id")
+            if nid:
+                scores[nid] = 1.0
+        with _scores_path().open("w", encoding="utf-8") as f:
+            json.dump(scores, f, indent=2)
+    except Exception:
+        # If anything fails, leave as is; KGScorer will reconcile on load
+        pass
+
+
 async def _run_loop_async(run_id: str, iterations: int, depth: int | None) -> None:
     # Delegate to pipeline's learn-loop
     await run_learning_loop(num_iters=iterations, run_id=run_id, depth=depth)
@@ -74,6 +91,7 @@ async def start_learn_loop(req: LearnLoopRequest, background_tasks: BackgroundTa
     if req.graph is not None:
         try:
             _write_graph(req.graph)
+            _reset_node_scores()
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"invalid graph: {e}")
 
