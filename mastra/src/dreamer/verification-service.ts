@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-const TAVILY_API_KEY = process.env.TAVILY_API_KEY;
 const TAVILY_API_URL = 'https://api.tavily.com/search';
 
 export interface VerificationResult {
@@ -36,13 +35,14 @@ export class VerificationService {
   private apiKey: string;
 
   constructor() {
-    if (!TAVILY_API_KEY) {
+    const tavilyApiKey = process.env.TAVILY_API_KEY;
+    if (!tavilyApiKey) {
       throw new Error(
         "TAVILY_API_KEY environment variable is not set. " +
         "Please create a .env file with your Tavily API key or set it in your environment."
       );
     }
-    this.apiKey = TAVILY_API_KEY;
+    this.apiKey = tavilyApiKey;
   }
 
   /**
