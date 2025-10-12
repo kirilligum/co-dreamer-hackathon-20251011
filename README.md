@@ -12,9 +12,9 @@
 
 ### Copilot: UI and batch edit of graph content in UI - [agui-README](./COPILOTKIT.md)
 
-### Tavily: websearch fact check
+### Tavily: websearch fact check - [verification-service.ts](./mastra/src/dreamer/verification-service.ts)
 
-### Daytona: Dreams deployed and running in the cloud
+### Daytona: Dreams deployed and running in the cloud - [daytona-service.ts](./mastra/src/dreamer/daytona-service.ts)
 
 ### Browserbase: coding documentations and front end testing
 
