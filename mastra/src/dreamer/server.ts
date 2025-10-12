@@ -5,9 +5,11 @@ import { cors } from "hono/cors";
 import { DreamerService } from "./dreamer-service";
 import { DreamRequest } from "./types";
 import { mastra } from "./mastra-instance";
+import { GraphStorageService } from "./graph-storage";
+import { RAGService } from "./rag-service";
 
-// Load environment variables from .env file
-config({ path: ".env" });
+// Load environment variables from .env file in project root
+config({ path: "/home/kirill/hachathons/co-dreamer-hackathon-20251011/.env" });
 
 const app = new Hono();
 
@@ -18,9 +20,22 @@ app.use("/*", cors({
 }));
 
 const dreamerService = new DreamerService();
+const graphStorage = new GraphStorageService();
+const ragService = new RAGService();
 
 // Flag to toggle between workflow and legacy implementation
 const USE_WORKFLOW = process.env.USE_WORKFLOW === 'true';
+
+// Initialize storage asynchronously
+(async () => {
+  try {
+    await graphStorage.initialize();
+    console.log('[GraphStorage] Initialization complete');
+  } catch (error) {
+    console.error('[GraphStorage] Initialization failed:', error);
+    process.exit(1);
+  }
+})();
 
 // Health check endpoint
 app.get("/", (c) => {
@@ -88,11 +103,247 @@ app.post("/api/v1/dream", async (c) => {
       console.log(`Generated ${graph.length} nodes`);
     }
 
+    // Save graph to database
+    const generationTime = Date.now() - startTime;
+    let graphId: string | undefined;
+    try {
+      const storedGraph = await graphStorage.saveGraph({
+        customer: body.customer,
+        product: body.product,
+        nodes: graph,
+        generationTimeMs: generationTime,
+        metadata: {
+          childrenCount: body.children_count || 2,
+          generationsCount: body.generations_count_int || 3,
+          implementation: USE_WORKFLOW ? 'workflow' : 'legacy'
+        }
+      });
+      graphId = storedGraph.id;
+      console.log(`[Storage] Graph saved with ID: ${storedGraph.id}`);
+    } catch (storageError) {
+      console.error('[Storage] Failed to save graph, continuing with response:', storageError);
+      // Continue even if storage fails - don't break the API
+    }
+
+    // Index graph for semantic search
+    if (graphId) {
+      try {
+        await ragService.indexGraph({
+          graphId,
+          customer: body.customer,
+          product: body.product,
+          nodes: graph,
+        });
+        console.log(`[RAG] Successfully indexed graph ${graphId}`);
+      } catch (ragError) {
+        console.error('[RAG] Failed to index graph, continuing with response:', ragError);
+        // Continue even if indexing fails - don't break the API
+      }
+    }
+
     return c.json(graph);
   } catch (error) {
     console.error("Error in dream endpoint:", error);
     return c.json({
       error: "Internal server error",
+      message: error instanceof Error ? error.message : String(error)
+    }, 500);
+  }
+});
+
+// List all graphs with optional filters
+app.get("/api/v1/graphs", async (c) => {
+  try {
+    const customer = c.req.query('customer');
+    const product = c.req.query('product');
+    const limit = parseInt(c.req.query('limit') || '10');
+    const offset = parseInt(c.req.query('offset') || '0');
+
+    const graphs = await graphStorage.listGraphs({
+      customer,
+      product,
+      limit,
+      offset
+    });
+    const total = await graphStorage.countGraphs({ customer, product });
+
+    return c.json({
+      graphs,
+      total,
+      limit,
+      offset,
+      hasMore: offset + graphs.length < total
+    });
+  } catch (error) {
+    console.error("Error in list graphs endpoint:", error);
+    return c.json({
+      error: "Failed to retrieve graphs",
+      message: error instanceof Error ? error.message : String(error)
+    }, 500);
+  }
+});
+
+// Get a specific graph by ID
+app.get("/api/v1/graphs/:id", async (c) => {
+  try {
+    const id = c.req.param('id');
+    const graph = await graphStorage.getGraph(id);
+
+    if (!graph) {
+      return c.json({ error: "Graph not found" }, 404);
+    }
+
+    return c.json(graph);
+  } catch (error) {
+    console.error("Error in get graph endpoint:", error);
+    return c.json({
+      error: "Failed to retrieve graph",
+      message: error instanceof Error ? error.message : String(error)
+    }, 500);
+  }
+});
+
+// Search graphs by customer and/or product
+app.get("/api/v1/graphs/search", async (c) => {
+  try {
+    const customer = c.req.query('customer');
+    const product = c.req.query('product');
+    const limit = parseInt(c.req.query('limit') || '10');
+    const offset = parseInt(c.req.query('offset') || '0');
+
+    if (!customer && !product) {
+      return c.json({
+        error: "At least one search parameter (customer or product) is required"
+      }, 400);
+    }
+
+    const graphs = await graphStorage.listGraphs({
+      customer,
+      product,
+      limit,
+      offset
+    });
+    const total = await graphStorage.countGraphs({ customer, product });
+
+    return c.json({
+      query: { customer, product },
+      results: graphs,
+      total,
+      limit,
+      offset
+    });
+  } catch (error) {
+    console.error("Error in search graphs endpoint:", error);
+    return c.json({
+      error: "Failed to search graphs",
+      message: error instanceof Error ? error.message : String(error)
+    }, 500);
+  }
+});
+
+// Get database statistics
+app.get("/api/v1/stats", async (c) => {
+  try {
+    const stats = await graphStorage.getStats();
+    return c.json(stats);
+  } catch (error) {
+    console.error("Error in stats endpoint:", error);
+    return c.json({
+      error: "Failed to retrieve statistics",
+      message: error instanceof Error ? error.message : String(error)
+    }, 500);
+  }
+});
+
+// Delete a graph by ID
+app.delete("/api/v1/graphs/:id", async (c) => {
+  try {
+    const id = c.req.param('id');
+    const deleted = await graphStorage.deleteGraph(id);
+
+    if (!deleted) {
+      return c.json({ error: "Graph not found or already deleted" }, 404);
+    }
+
+    // Also remove from RAG index
+    try {
+      await ragService.removeGraph(id);
+    } catch (ragError) {
+      console.error('[RAG] Failed to remove graph from index:', ragError);
+    }
+
+    return c.json({
+      success: true,
+      message: `Graph ${id} deleted successfully`
+    });
+  } catch (error) {
+    console.error("Error in delete graph endpoint:", error);
+    return c.json({
+      error: "Failed to delete graph",
+      message: error instanceof Error ? error.message : String(error)
+    }, 500);
+  }
+});
+
+// Semantic search for nodes
+app.get("/api/v1/search/nodes", async (c) => {
+  try {
+    const query = c.req.query('q');
+    const limit = parseInt(c.req.query('limit') || '10');
+    const customer = c.req.query('customer');
+    const product = c.req.query('product');
+    const minScore = parseFloat(c.req.query('minScore') || '0.5');
+
+    if (!query) {
+      return c.json({
+        error: "Missing required parameter: q (query)"
+      }, 400);
+    }
+
+    const results = await ragService.searchNodes({
+      query,
+      limit,
+      customer,
+      product,
+      minScore,
+    });
+
+    return c.json({
+      query,
+      results,
+      count: results.length,
+      filters: {
+        customer: customer || null,
+        product: product || null,
+        minScore,
+      }
+    });
+  } catch (error) {
+    console.error("Error in semantic search endpoint:", error);
+    return c.json({
+      error: "Failed to search nodes",
+      message: error instanceof Error ? error.message : String(error)
+    }, 500);
+  }
+});
+
+// Get RAG statistics
+app.get("/api/v1/search/stats", async (c) => {
+  try {
+    const stats = ragService.getStats();
+
+    return c.json({
+      totalNodes: stats.totalNodes,
+      totalGraphs: stats.totalGraphs,
+      graphBreakdown: Array.from(stats.graphBreakdown.entries()).map(([graphId, count]) => ({
+        graphId,
+        nodeCount: count,
+      })),
+    });
+  } catch (error) {
+    console.error("Error in RAG stats endpoint:", error);
+    return c.json({
+      error: "Failed to retrieve RAG statistics",
       message: error instanceof Error ? error.message : String(error)
     }, 500);
   }
