@@ -7,6 +7,7 @@ import { DreamRequest } from "./types";
 import { mastra } from "./mastra-instance";
 import { GraphStorageService } from "./graph-storage";
 import { RAGService } from "./rag-service";
+import { GraphEvalService } from "./eval-service";
 
 // Load environment variables from .env file in project root
 config({ path: "/home/kirill/hachathons/co-dreamer-hackathon-20251011/.env" });
@@ -22,6 +23,7 @@ app.use("/*", cors({
 const dreamerService = new DreamerService();
 const graphStorage = new GraphStorageService();
 const ragService = new RAGService();
+const evalService = new GraphEvalService();
 
 // Flag to toggle between workflow and legacy implementation
 const USE_WORKFLOW = process.env.USE_WORKFLOW === 'true';
@@ -344,6 +346,97 @@ app.get("/api/v1/search/stats", async (c) => {
     console.error("Error in RAG stats endpoint:", error);
     return c.json({
       error: "Failed to retrieve RAG statistics",
+      message: error instanceof Error ? error.message : String(error)
+    }, 500);
+  }
+});
+
+// Evaluate a specific graph by ID
+app.post("/api/v1/eval/graph/:id", async (c) => {
+  try {
+    const id = c.req.param('id');
+    const graph = await graphStorage.getGraph(id);
+
+    if (!graph) {
+      return c.json({ error: "Graph not found" }, 404);
+    }
+
+    const evalResult = await evalService.evaluateGraph({
+      nodes: graph.nodes,
+      customer: graph.customer,
+      product: graph.product,
+      metadata: graph.metadata,
+    });
+
+    return c.json({
+      graphId: id,
+      evaluation: evalResult,
+      graphMetadata: {
+        customer: graph.customer,
+        product: graph.product,
+        createdAt: graph.createdAt,
+        implementation: graph.metadata?.implementation,
+      },
+    });
+  } catch (error) {
+    console.error("Error in eval graph endpoint:", error);
+    return c.json({
+      error: "Failed to evaluate graph",
+      message: error instanceof Error ? error.message : String(error)
+    }, 500);
+  }
+});
+
+// Compare two graphs
+app.post("/api/v1/eval/compare", async (c) => {
+  try {
+    const body = await c.req.json<{
+      graphId1: string;
+      graphId2: string;
+      label1?: string;
+      label2?: string;
+    }>();
+
+    if (!body.graphId1 || !body.graphId2) {
+      return c.json({
+        error: "Missing required fields: graphId1 and graphId2"
+      }, 400);
+    }
+
+    const [graph1, graph2] = await Promise.all([
+      graphStorage.getGraph(body.graphId1),
+      graphStorage.getGraph(body.graphId2),
+    ]);
+
+    if (!graph1) {
+      return c.json({ error: `Graph ${body.graphId1} not found` }, 404);
+    }
+    if (!graph2) {
+      return c.json({ error: `Graph ${body.graphId2} not found` }, 404);
+    }
+
+    const comparison = await evalService.compareGraphs({
+      graph1: {
+        nodes: graph1.nodes,
+        customer: graph1.customer,
+        product: graph1.product,
+        metadata: graph1.metadata,
+        label: body.label1 || `Graph ${body.graphId1.substring(0, 8)}`,
+      },
+      graph2: {
+        nodes: graph2.nodes,
+        customer: graph2.customer,
+        product: graph2.product,
+        metadata: graph2.metadata,
+        label: body.label2 || `Graph ${body.graphId2.substring(0, 8)}`,
+      },
+    });
+
+    return c.json(comparison);
+  } catch (error) {
+    console.error("Error in compare graphs endpoint:", error);
+    return c.json({
+      error: "Failed to compare graphs",
       message: error instanceof Error ? error.message : String(error)
     }, 500);
   }
