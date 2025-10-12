@@ -1,1 +1,1 @@
-{"iteration": 2, "ts": "2025-10-12T01:13:52.633083", "scores": {"prospect:alex": 0.5271, "company:acme": 0.45420000000000005, "industry:fintech": 0.3, "problem:integration": 0.6774840978000001, "feature:api": 0.7162261467000002, "case:fintechco": 0.66561, "metric:roi": 0.6000000000000001}}
+{"iteration": 2, "ts": "2025-10-12T01:19:11.093807", "scores": {"prospect:alex": 0.53439, "company:acme": 0.46878000000000003, "industry:fintech": 0.3, "problem:integration": 0.66973568802, "feature:api": 0.6847288609443001, "case:fintechco": 0.659049, "metric:roi": 0.6000000000000001}}
