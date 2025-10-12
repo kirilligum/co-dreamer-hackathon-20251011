@@ -27,8 +27,8 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ nodes }) => {
     const levels = new Map<string, number>();
     const visited = new Set<string>();
 
-    // BFS to determine levels
-    const queue: { id: string; level: number }[] = [{ id: 'root', level: 0 }];
+    // BFS to determine levels - start from "Customer Job" anchor node
+    const queue: { id: string; level: number }[] = [{ id: 'Customer Job', level: 0 }];
     const nodesAtLevel = new Map<number, string[]>();
 
     while (queue.length > 0) {
@@ -65,16 +65,20 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ nodes }) => {
 
       const node = nodeMap.get(nodeId);
       if (node) {
+        const isCustomerJob = nodeId === 'Customer Job';
+        const isProductFeature = nodeId === 'Product Feature';
+        const isAnchorNode = isCustomerJob || isProductFeature;
+
         fNodes.push({
           id: nodeId,
-          type: nodeId === 'root' ? 'input' : 'default',
+          type: isCustomerJob ? 'input' : isProductFeature ? 'output' : 'default',
           data: {
             label: (
               <div style={{ padding: '10px', maxWidth: '250px' }}>
                 <div style={{ fontWeight: 'bold', marginBottom: '5px', fontSize: '12px' }}>
-                  {nodeId === 'root' ? 'Customer' : nodeId.split('-').slice(0, -1).join(' ')}
+                  {isCustomerJob ? 'Customer Job' : isProductFeature ? 'Product Feature' : nodeId.split('-').slice(0, -1).join(' ')}
                 </div>
-                <div style={{ fontSize: '11px', color: '#666' }}>
+                <div style={{ fontSize: '11px', color: isAnchorNode ? '#ffffff' : '#666' }}>
                   {node.content.substring(0, 100)}
                   {node.content.length > 100 ? '...' : ''}
                 </div>
@@ -88,9 +92,10 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ nodes }) => {
           sourcePosition: Position.Bottom,
           targetPosition: Position.Top,
           style: {
-            background: nodeId === 'root' ? '#6366f1' : '#ffffff',
-            color: nodeId === 'root' ? '#ffffff' : '#000000',
-            border: '2px solid #6366f1',
+            background: isCustomerJob ? '#6366f1' : isProductFeature ? '#10b981' : '#ffffff',
+            color: isAnchorNode ? '#ffffff' : '#000000',
+            border: isAnchorNode ? '3px solid' : '2px solid #6366f1',
+            borderColor: isCustomerJob ? '#4f46e5' : isProductFeature ? '#059669' : '#6366f1',
             borderRadius: '8px',
             padding: '0',
             width: 'auto',
@@ -161,7 +166,11 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ nodes }) => {
         <Background />
         <Controls />
         <MiniMap
-          nodeColor={(node) => (node.id === 'root' ? '#6366f1' : '#e5e7eb')}
+          nodeColor={(node) => {
+            if (node.id === 'Customer Job') return '#6366f1';
+            if (node.id === 'Product Feature') return '#10b981';
+            return '#e5e7eb';
+          }}
           maskColor="rgba(0, 0, 0, 0.1)"
         />
       </ReactFlow>

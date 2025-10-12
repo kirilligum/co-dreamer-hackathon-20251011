@@ -38,10 +38,10 @@ function sanitizeForMermaid(text: string, maxLength: number = 50): string {
 }
 
 function getNodeLabel(node: Node): string {
-  if (node.id === 'root') {
-    return 'Customer: ' + sanitizeForMermaid(node.content, 40);
-  } else if (node.id === 'product') {
-    return 'Product: ' + sanitizeForMermaid(node.content, 40);
+  if (node.id === 'Customer Job') {
+    return 'Customer Job: ' + sanitizeForMermaid(node.content, 40);
+  } else if (node.id === 'Product Feature') {
+    return 'Product Feature: ' + sanitizeForMermaid(node.content, 40);
   } else {
     // Extract the descriptive part of the ID (before the UUID)
     const namePart = node.id.split('-').slice(0, -1).join(' ');
@@ -67,19 +67,29 @@ function generateMermaid(nodes: Node[]): string {
   lines.push('  %% Nodes');
   nodes.forEach(node => {
     const label = getNodeLabel(node);
-    lines.push(`  ${node.id}["${label}"]`);
+    // Use sanitized IDs for Mermaid node definitions (no spaces)
+    if (node.id === 'Customer Job') {
+      lines.push(`  CustomerJob["${label}"]`);
+    } else if (node.id === 'Product Feature') {
+      lines.push(`  ProductFeature["${label}"]`);
+    } else {
+      const safeId = node.id.replace(/[^a-zA-Z0-9]/g, '_');
+      lines.push(`  ${safeId}["${label}"]`);
+    }
   });
   lines.push('');
 
   // Apply styles
   lines.push('  %% Apply Styles');
   nodes.forEach(node => {
-    if (node.id === 'root') {
-      lines.push(`  class ${node.id} customerClass`);
-    } else if (node.id === 'product') {
-      lines.push(`  class ${node.id} productClass`);
+    if (node.id === 'Customer Job') {
+      lines.push(`  class CustomerJob customerClass`);
+    } else if (node.id === 'Product Feature') {
+      lines.push(`  class ProductFeature productClass`);
     } else {
-      lines.push(`  class ${node.id} dreamClass`);
+      // Sanitize node ID for Mermaid class application
+      const safeId = node.id.replace(/[^a-zA-Z0-9]/g, '_');
+      lines.push(`  class ${safeId} dreamClass`);
     }
   });
   lines.push('');
@@ -89,7 +99,17 @@ function generateMermaid(nodes: Node[]): string {
   nodes.forEach(node => {
     node.edge.forEach(edge => {
       const relationship = sanitizeForMermaid(edge.relationship, 20);
-      lines.push(`  ${node.id} -->|"${relationship}"| ${edge.target_id}`);
+
+      // Map node IDs to Mermaid-safe IDs
+      const sourceId = node.id === 'Customer Job' ? 'CustomerJob' :
+                       node.id === 'Product Feature' ? 'ProductFeature' :
+                       node.id.replace(/[^a-zA-Z0-9]/g, '_');
+
+      const targetId = edge.target_id === 'Customer Job' ? 'CustomerJob' :
+                       edge.target_id === 'Product Feature' ? 'ProductFeature' :
+                       edge.target_id.replace(/[^a-zA-Z0-9]/g, '_');
+
+      lines.push(`  ${sourceId} -->|"${relationship}"| ${targetId}`);
     });
   });
 

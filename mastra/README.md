@@ -192,22 +192,14 @@ curl -X POST http://localhost:3457/api/v1/dream \
 
 ## Visualizing Knowledge Graphs
 
-### Generate Mermaid Diagram from JSON
+### Quick PNG Generation
 
-Convert your knowledge graph JSON to a visual Mermaid diagram:
-
-```bash
-# Convert JSON to Mermaid format
-npx tsx scripts/graph-to-mermaid.ts knowledge-graph.json knowledge-graph.mmd
-```
-
-### Generate PNG Image
-
-Create a PNG visualization of your knowledge graph:
+The simplest way to visualize your knowledge graph:
 
 ```bash
-# Generate PNG from Mermaid diagram
-npx -p @mermaid-js/mermaid-cli mmdc -i knowledge-graph.mmd -o knowledge-graph.png
+# Takes a JSON file, outputs a PNG with the same name
+npx tsx scripts/graph-to-png.ts knowledge-graph.json
+# Output: knowledge-graph.png (and knowledge-graph.mmd)
 ```
 
 **Complete workflow example:**
@@ -223,18 +215,27 @@ curl -X POST http://localhost:3457/api/v1/dream \
     "generations_count_int": 3
   }' > my-graph.json
 
-# 2. Convert to Mermaid
-npx tsx scripts/graph-to-mermaid.ts my-graph.json my-graph.mmd
-
-# 3. Generate PNG visualization
-npx -p @mermaid-js/mermaid-cli mmdc -i my-graph.mmd -o my-graph.png
+# 2. Generate PNG visualization (automatically creates .mmd and .png)
+npx tsx scripts/graph-to-png.ts my-graph.json
 ```
 
 **Diagram Features:**
-- **Blue nodes**: Customer (starting point)
-- **Green nodes**: Product (ending point)
+- **Blue nodes**: Customer Job (starting anchor)
+- **Green nodes**: Product Feature (ending anchor)
 - **Gray nodes**: Intermediate dream nodes
 - **Labeled edges**: Show relationships between concepts
+
+### Advanced: Separate Steps
+
+If you need more control, you can generate Mermaid and PNG separately:
+
+```bash
+# Step 1: Generate Mermaid diagram
+npx tsx scripts/graph-to-mermaid.ts knowledge-graph.json knowledge-graph.mmd
+
+# Step 2: Generate PNG from Mermaid
+npx -p @mermaid-js/mermaid-cli mmdc -i knowledge-graph.mmd -o knowledge-graph.png
+```
 
 ## Understanding the Output
 

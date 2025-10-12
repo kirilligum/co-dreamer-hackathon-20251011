@@ -1,4 +1,4 @@
-import { Node, Edge, DreamRequest, LLMGeneratedNode } from "./types";
+import { Node, Edge, DreamRequest, LLMGeneratedNode, CUSTOMER_JOB_ID, PRODUCT_FEATURE_ID } from "./types";
 import { LLMService } from "./llm-service";
 import { randomUUID } from "crypto";
 
@@ -25,9 +25,9 @@ export class DreamerService {
     // Reset graph store for this request
     this.graphStore.clear();
 
-    // Step 1: Initialize with root node
+    // Step 1: Initialize with Customer Job anchor node
     const rootNode: Node = {
-      id: "root",
+      id: CUSTOMER_JOB_ID,
       content: customer,
       edge: [],
     };
@@ -95,16 +95,16 @@ export class DreamerService {
       currentGeneration++;
     }
 
-    // Step 4: Create product node and connect all final generation nodes to it
+    // Step 4: Create Product Feature anchor node and connect all final generation nodes to it
     const productNode: Node = {
-      id: "product",
+      id: PRODUCT_FEATURE_ID,
       content: product,
       edge: [],
     };
     this.graphStore.set(productNode.id, productNode);
 
-    // Connect all leaf nodes (final generation) to the product node
-    console.log(`Connecting ${lastGenerationNodes.length} final nodes to product`);
+    // Connect all leaf nodes (final generation) to the Product Feature anchor node
+    console.log(`Connecting ${lastGenerationNodes.length} final nodes to Product Feature`);
     for (const leafNode of lastGenerationNodes) {
       try {
         // Generate connection from leaf node to product using LLM
@@ -118,18 +118,18 @@ export class DreamerService {
         if (connectionNodes.length > 0) {
           const connection = connectionNodes[0];
           const edge: Edge = {
-            target_id: productNode.id,
+            target_id: PRODUCT_FEATURE_ID,
             relationship: connection.relationship,
             rationale: connection.rationale,
           };
           leafNode.edge.push(edge);
-          console.log(`  Connected ${leafNode.id} -> product`);
+          console.log(`  Connected ${leafNode.id} -> Product Feature`);
         }
       } catch (error) {
-        console.error(`Error connecting ${leafNode.id} to product:`, error);
+        console.error(`Error connecting ${leafNode.id} to Product Feature:`, error);
         // Create a fallback connection
         const edge: Edge = {
-          target_id: productNode.id,
+          target_id: PRODUCT_FEATURE_ID,
           relationship: "enables",
           rationale: "This concept connects to and enables the use of the product.",
         };

@@ -62,3 +62,4 @@ logs/
 
 # Note: keep lock files tracked (e.g. uv.lock, poetry.lock)
 # Note: keep project data (e.g. codreamer/data) tracked
+.aider*

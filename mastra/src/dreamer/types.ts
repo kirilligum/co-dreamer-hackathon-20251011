@@ -2,6 +2,10 @@
  * Knowledge Graph Data Structures
  */
 
+// Anchor node IDs (exact strings required for parsing by other services)
+export const CUSTOMER_JOB_ID = "Customer Job";
+export const PRODUCT_FEATURE_ID = "Product Feature";
+
 export interface Edge {
   target_id: string;
   relationship: string;
