@@ -355,7 +355,7 @@ mastra/
 
 ### Using Google Gemini (Default)
 
-The service is configured to use **Google Gemini 2.0 Flash Experimental** model by default.
+The service is configured to use **Google Gemini 2.5 Flash-Lite** model by default - optimized for cost-efficiency and high throughput with 1M+ token context window.
 
 #### API Key Setup
 

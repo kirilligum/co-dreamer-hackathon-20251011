@@ -1,7 +1,18 @@
 {
-  "Human-in-the-Loop Workflow": 0.6932649824160002,
-  "Process for Quality Validation": 0.6932649824160002,
+  "synthetic-data-governance-b42b569c": 0.96,
+  "synthetic-data-benefits-53762297": 0.9239999999999999,
+  "metrics-model-debugging-6fd84c7a": 0.9239999999999999,
+  "bias-detection-methods-5bbc7a6a": 0.96,
+  "synthetic-data-bias-334b3730": 0.9239999999999999,
+  "synthetic-data-evaluation-metrics-f39f96a6": 0.9239999999999999,
+  "evaluation-metric-bias-b2f21bac": 0.96,
+  "gan-training-challenges-82ce2b1e": 0.9239999999999999,
+  "synthetic-data-bias-7f30650d": 0.9239999999999999,
+  "data-augmentation-techniques-12c74f60": 0.96,
+  "synthetic-data-bias-ce991d09": 0.96,
+  "data-generation-techniques-2794f191": 0.9239999999999999,
+  "synthetic-data-validation-c6edbd20": 0.96,
   "Product Feature": 0.8624399999999999,
   "Customer Job": 0.7421505600000002,
-  "Annotation Guideline Management": 0.6932649824160002
+  "ai-model-evaluation-1597d40a": 0.96
 }

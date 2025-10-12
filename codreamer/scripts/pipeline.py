@@ -110,7 +110,10 @@ async def evaluate(model: art.Model) -> list[ProjectTrajectory]:
 
 @weave.op()
 async def run_pipeline() -> None:
-    weave.init("pierg-org/codreamer")
+    try:
+        weave.init("pierg-org/codreamer")
+    except Exception as e:
+        logger.warning(f"Failed to initialize Weave (W&B offline mode): {e}")
     setup_logging()
     model = await create_and_register_model()
 
