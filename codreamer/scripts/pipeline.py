@@ -136,13 +136,13 @@ def main() -> None:
 # ------------------------
 
 def _groups_path(step: int) -> Path:
-    return PROJECT_ROOT / "data" / f"step{step}_groups.jsonl"
+    return PROJECT_ROOT / "results" / f"step{step}_groups.jsonl"
 
 def _eval_path() -> Path:
-    return PROJECT_ROOT / "data" / "step5_eval.jsonl"
+    return PROJECT_ROOT / "results" / "step5_eval.jsonl"
 
 def _iter_path(iteration: int, suffix: str) -> Path:
-    return PROJECT_ROOT / "data" / f"iter{iteration}_{suffix}.jsonl"
+    return PROJECT_ROOT / "results" / f"iter{iteration}_{suffix}.jsonl"
 
 def _traj_to_dict(t: ProjectTrajectory) -> dict:
     fe = None
@@ -311,7 +311,7 @@ def log_node_scores_snapshot(iteration: int) -> dict:
         except Exception:
             snapshot["scores"] = {}
     # Save a copy per iteration for diff/visualization
-    out = PROJECT_ROOT / "data" / f"iter{iteration}_node_scores.json"
+    out = PROJECT_ROOT / "results" / f"iter{iteration}_node_scores.json"
     _write_json(out, snapshot)
     return snapshot
 
