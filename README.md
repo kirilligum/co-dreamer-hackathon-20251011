@@ -6,8 +6,8 @@
 
 WandB: Tracing, RL scores, Inference
 OpenPipe: iterative RL on knowledge graph traversal and query response model
-Copilot: UI and batch edit of graph content in UI
-Mastra: Workflow, Sql, RAG, Evals
+Copilot: UI and batch edit of graph content in UI - [README](./codreamer-agui/README.md)
+Mastra: Workflow, Sql, RAG, Evals - [README](./mastra/README.md)
 Tavily: websearch fact check
 Daytona: Dreams deployed and running in the cloud
 Browserbase: coding documentations and front end testing
