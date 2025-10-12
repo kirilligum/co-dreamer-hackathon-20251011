@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import os
 from datetime import datetime
+import json
+import os
 
 import art
+from openai import AsyncOpenAI
 from loguru import logger
 import weave
 
@@ -30,15 +33,65 @@ def _offline_score_email(subject: str, body: str, citations: list[str]) -> float
 @weave.op()
 async def score_trajectory_group(group: art.TrajectoryGroup) -> art.TrajectoryGroup:
     if os.getenv("OPENAI_API_KEY"):
-        # Use built-in RULER from art.rewards when available
-        from art.rewards import ruler_score_group  # lazy import
+        logger.info("Using LLMJudge scoring (online)")
 
-        logger.info("Using online RULER scoring")
-        judged = await ruler_score_group(group, "openai/o4-mini", debug=False)
+        async def _llm_judge_scores(cands: list[tuple[str, str]]) -> list[float]:
+            """Return relative scores in [0,1] for each (subject, body)."""
+            client = AsyncOpenAI()
+            items = []
+            for idx, (subj, body) in enumerate(cands, 1):
+                items.append({"id": idx, "subject": subj, "body": body})
+            prompt = {
+                "role": "system",
+                "content": (
+                    "You are a strict email judge. Score each candidate (0..1) on personalization, alignment, clarity, CTA, and grounding. "
+                    "Return JSON with a 'scores' array of floats (length = number of candidates)."
+                ),
+            }
+            user = {
+                "role": "user",
+                "content": json.dumps({"candidates": items}),
+            }
+            resp = await client.chat.completions.create(
+                model=os.getenv("JUDGE_MODEL", "gpt-4o-mini"), temperature=0.0, messages=[prompt, user]
+            )
+            text = resp.choices[0].message.content or "{}"
+            try:
+                data = json.loads(text)
+                raw_scores = data.get("scores", [])
+                scores = [float(s) for s in raw_scores]
+            except Exception:
+                # Fallback: simple descending scores
+                scores = [1.0 - (i / max(1, len(cands) - 1)) for i in range(len(cands))]
+            # Min-max normalize to [0,1]
+            if scores:
+                mn, mx = min(scores), max(scores)
+                if mx > mn:
+                    scores = [(s - mn) / (mx - mn) for s in scores]
+                else:
+                    scores = [0.5 for _ in scores]
+            return scores
 
-        # Log RULER feedback and blend via feedback mixer
+        # Build candidates from trajectories
+        candidates: list[tuple[str, str]] = []
+        for t in group.trajectories:
+            subject = ""
+            body = ""
+            if hasattr(t, "final_email") and t.final_email is not None:
+                subject = t.final_email.subject
+                body = t.final_email.body
+            else:
+                msgs = t.messages()
+                body = msgs[-1]["content"] if msgs else ""
+            candidates.append((subject, body))
+
+        scores = await _llm_judge_scores(candidates)
+
+        trajectories = []
         traj_ids = []
-        for t in judged.trajectories:
+        for t, s in zip(group.trajectories, scores):
+            t.reward = float(s)
+            trajectories.append(t)
             tid = hash_trajectory(t.messages_and_choices)
             traj_ids.append(tid)
             fb = RULERFeedback(
@@ -47,16 +100,16 @@ async def score_trajectory_group(group: art.TrajectoryGroup) -> art.TrajectoryGr
                 step=int(t.metadata.get("step", 0)) if isinstance(t.metadata, dict) else 0,
                 ts=datetime.utcnow(),
                 rank=1,
-                group_size=len(judged.trajectories),
-                rubric={"ruler_reward": float(getattr(t, "reward", 0.0))},
+                group_size=len(group.trajectories),
+                rubric={"llm_judge": float(t.reward)},
             )
             append_event(fb)
 
         blended = compute_rewards(traj_ids, RewardMixConfig())
-        for t in judged.trajectories:
+        for t in trajectories:
             tid = hash_trajectory(t.messages_and_choices)
             t.reward = float(blended.get(tid, getattr(t, "reward", 0.0)))
-        return judged
+        return art.TrajectoryGroup(trajectories=trajectories)
 
     logger.info("Using offline fallback scoring")
     trajectories = []

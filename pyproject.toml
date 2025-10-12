@@ -24,6 +24,12 @@ demo = "codreamer.scripts.demo:main"
 train = "codreamer.scripts.train:main"
 pipeline = "codreamer.scripts.pipeline:main"
 add-feedback = "codreamer.scripts.add_feedback:main"
+step1-generate = "codreamer.scripts.pipeline:main_step1"
+step2-score = "codreamer.scripts.pipeline:main_step2"
+step3-grpo = "codreamer.scripts.pipeline:main_step3"
+step4-update-kg = "codreamer.scripts.pipeline:main_step4"
+step5-evaluate = "codreamer.scripts.pipeline:main_step5"
+learn-loop = "codreamer.scripts.pipeline:main_loop"
 
 [build-system]
 requires = ["hatchling"]

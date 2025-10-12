@@ -12,3 +12,15 @@
 {"trajectory_id": "0980372fe6f7d18ec3ee81b85c4685f902ae4f1a", "prospect_id": "p1", "step": 0, "ts": "2025-10-11 22:43:06.339344", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"ruler_reward": 0.4}}
 {"trajectory_id": "1e81ca9a12dcd38ed364bfe77f04d2084dbc0527", "prospect_id": "p1", "step": 0, "ts": "2025-10-11 22:43:06.339626", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"ruler_reward": 0.9}}
 {"trajectory_id": "a8dd51aef18ef763db9cc4cf4776e4ffbc5df40c", "prospect_id": "p1", "step": 1, "ts": "2025-10-11 22:43:34.010624", "kind": "online", "opened": true, "replied": true, "call_booked": false, "opportunity": false, "closed_won": false}
+{"trajectory_id": "a1d6c677f871582ad319507e39ee86c56eae2db6", "prospect_id": "p1", "step": 0, "ts": "2025-10-11 23:58:29.298086", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"ruler_reward": 0.8}}
+{"trajectory_id": "d42a0f9dc7af902a8af7a112824bbe80716aa417", "prospect_id": "p1", "step": 0, "ts": "2025-10-11 23:58:29.300019", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"ruler_reward": 0.95}}
+{"trajectory_id": "2f04d480ebfe09350e80c28a3cf9bd346052566a", "prospect_id": "p1", "step": 0, "ts": "2025-10-11 23:58:29.300912", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"ruler_reward": 0.1}}
+{"trajectory_id": "880c3785b4d03e83aebfad66049e905f5514b218", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 00:33:37.143532", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 1.0}}
+{"trajectory_id": "cd35a30631cb40575ec604cd410b2c9ea9f9d0d8", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 00:33:37.146008", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 0.5}}
+{"trajectory_id": "36dcc3d8fa4730f0b4d60f92758c73a58a9a47e8", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 00:33:37.146835", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 0.0}}
+{"trajectory_id": "c25bf7fb00c589f105089cd66312d5bb55c4e3ed", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 00:34:12.888203", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 1.0}}
+{"trajectory_id": "47b5081da21d6c97a92047239d2908836a07deda", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 00:34:12.889944", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 0.5}}
+{"trajectory_id": "04a7ef8c473f3df90e38c3d455cca6c1fc4c3163", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 00:34:12.891834", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 0.0}}
+{"trajectory_id": "e83b2925fa14adbf60a6fd99d597d2100791d43d", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 00:34:49.064173", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 1.0}}
+{"trajectory_id": "585118fad5bc65530f9375d8d340f7a42b10a11d", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 00:34:49.066406", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 0.5}}
+{"trajectory_id": "a1aed1b1ba944b3999e372f56b17ea606c2c72ee", "prospect_id": "p1", "step": 0, "ts": "2025-10-12 00:34:49.067883", "kind": "ruler", "rank": 1, "group_size": 3, "rubric": {"llm_judge": 0.0}}

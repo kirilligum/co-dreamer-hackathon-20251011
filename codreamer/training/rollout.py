@@ -113,8 +113,11 @@ async def rollout(model: art.Model, scenario_input: ScenarioInput) -> ProjectTra
                 dir_txt = f"Goal: {sc.goal}"
                 call_subject = args.get("subject", subject_text or dir_txt)
                 call_body = args.get("body", body_text or dir_txt)
-                raw_citations = args.get("citations", sorted(citation_ids))
-                call_citations = list(raw_citations) if isinstance(raw_citations, (list, set, tuple)) else sorted(citation_ids)
+                raw_citations = args.get("citations", None)
+                if isinstance(raw_citations, (list, set, tuple)) and len(raw_citations) > 0:
+                    call_citations = list(raw_citations)
+                else:
+                    call_citations = sorted(citation_ids)
                 result = finalize_email(call_subject, call_body, call_citations)
             else:
                 result = tools_by_name[name](**args)

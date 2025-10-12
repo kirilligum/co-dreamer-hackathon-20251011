@@ -2,8 +2,8 @@
   "prospect:alex": 0.5,
   "company:acme": 0.4,
   "industry:fintech": 0.3,
-  "problem:integration": 0.8,
-  "feature:api": 0.9,
-  "case:fintechco": 0.7,
-  "metric:roi": 0.6
+  "problem:integration": 0.762,
+  "feature:api": 0.8430000000000002,
+  "case:fintechco": 0.681,
+  "metric:roi": 0.6000000000000001
 }
