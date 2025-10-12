@@ -1,0 +1,25 @@
+graph TB
+subgraph "KG Construction"
+  direction TB
+  starting_node[Starting Node]
+  dream[Dream 1]
+end
+subgraph "Reinforcement Learning"
+  direction TB
+  rl_agent[RL Agent]
+  environment[Environment]
+  reward_system[Reward System]
+end
+subgraph Application
+  direction TB
+end
+existing_kg[Existing Knowledge Graph] --> starting_node[Starting Node]
+starting_node[Starting Node] --> dream[Dream 1] 
+deam_topic[Dream Topic] --> dream
+dream --> new_node1[New Node 1]
+dream -.-> new_node2[New Node 2]
+dream -.-> new_node3[New Node 3]
+verify[Verify New Nodes] --> new_node1[New Node 1]
+new_node1 --> dream21[Dream 21]
+dream21 --> new_node11[New Node 11]
+
