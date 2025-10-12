@@ -17,8 +17,8 @@ from ..scripts.pipeline import run_learning_loop
 
 class LearnLoopRequest(BaseModel):
     graph: list[dict[str, Any]] | None = None
-    iterations: int = 3
-    depth: int | None = None
+    iterations: int = 10
+    depth: int = 3
 
 
 class LearnLoopResponse(BaseModel):
