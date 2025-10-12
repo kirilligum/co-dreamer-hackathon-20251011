@@ -4,6 +4,7 @@ import json
 from textwrap import dedent
 
 import art
+import os
 from langchain_core.utils.function_calling import convert_to_openai_tool
 from loguru import logger
 from openai import AsyncOpenAI
@@ -70,7 +71,14 @@ async def rollout(model: art.Model, scenario_input: ScenarioInput) -> ProjectTra
         f"rollout(start): step={scenario_input.step} prospect={sc.prospect.prospect_id} name={sc.prospect.name} goal='{sc.goal}' seeds={sc.seed_nodes}"
     )
 
-    for turn_idx in range(1, MAX_TURNS + 1):
+    effective_max_turns = MAX_TURNS
+    try:
+        if os.getenv("MAX_TURNS_OVERRIDE"):
+            effective_max_turns = max(1, int(os.getenv("MAX_TURNS_OVERRIDE", str(MAX_TURNS)) or MAX_TURNS))
+    except Exception:
+        effective_max_turns = MAX_TURNS
+
+    for turn_idx in range(1, effective_max_turns + 1):
         finalized_now = False
         nudged_now = False
         tool_names: list[str] = []
@@ -92,7 +100,7 @@ async def rollout(model: art.Model, scenario_input: ScenarioInput) -> ProjectTra
             })
             nudged_now = True
             logger.info(
-                f"turn[{turn_idx}/{MAX_TURNS}]: calls=0 tools=[] subject={subject_text is not None} body={body_text is not None} "
+                f"turn[{turn_idx}/{effective_max_turns}]: calls=0 tools=[] subject={subject_text is not None} body={body_text is not None} "
                 f"cites={len(citation_ids)} nudged={nudged_now} finalized={finalized_now}"
             )
             continue
@@ -143,7 +151,7 @@ async def rollout(model: art.Model, scenario_input: ScenarioInput) -> ProjectTra
             nudged_now = True
 
         logger.info(
-            f"turn[{turn_idx}/{MAX_TURNS}]: calls={len(tool_names)} tools={tool_names} subject={subject_text is not None} "
+            f"turn[{turn_idx}/{effective_max_turns}]: calls={len(tool_names)} tools={tool_names} subject={subject_text is not None} "
             f"body={body_text is not None} cites={len(citation_ids)} nudged={nudged_now} finalized={finalized_now}"
         )
 

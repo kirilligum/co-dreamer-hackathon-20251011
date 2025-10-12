@@ -346,7 +346,7 @@ def main_step5() -> None:
 # ------------------------
 
 @weave.op()
-async def run_learning_loop(num_iters: int = 3, run_id: str | None = None) -> None:
+async def run_learning_loop(num_iters: int = 3, run_id: str | None = None, depth: int | None = None) -> None:
     weave.init("pierg-org/codreamer")
     setup_logging()
     global _RUN_ID
@@ -357,6 +357,9 @@ async def run_learning_loop(num_iters: int = 3, run_id: str | None = None) -> No
     logger.info(f"[Loop] Results root: {_results_root()}")
     model = await create_and_register_model()
     for it in range(1, num_iters + 1):
+        # Optionally override per-iteration depth (max turns)
+        if depth is not None:
+            os.environ["MAX_TURNS_OVERRIDE"] = str(max(1, depth))
         logger.info(f"[Loop {it}/{num_iters}] Step 1 - Generate")
         groups = await generate_trajectories(model)
         write_groups(groups, _iter_path(it, "step1_groups"))
@@ -376,9 +379,15 @@ async def run_learning_loop(num_iters: int = 3, run_id: str | None = None) -> No
 def main_loop() -> None:
     # Accept number of iterations from CLI arg or env NUM_ITERS; optional RUN_ID env
     iters = 3
+    depth = None
     if len(os.sys.argv) > 1:
         try:
             iters = int(os.sys.argv[1])
+        except Exception:
+            pass
+    if len(os.sys.argv) > 2:
+        try:
+            depth = int(os.sys.argv[2])
         except Exception:
             pass
     env_iters = os.getenv("NUM_ITERS")
@@ -387,8 +396,14 @@ def main_loop() -> None:
             iters = int(env_iters)
         except Exception:
             pass
+    env_depth = os.getenv("DEPTH")
+    if env_depth:
+        try:
+            depth = int(env_depth)
+        except Exception:
+            pass
     run_id = os.getenv("RUN_ID")
-    asyncio.run(run_learning_loop(num_iters=iters, run_id=run_id))
+    asyncio.run(run_learning_loop(num_iters=iters, run_id=run_id, depth=depth))
 
 
 if __name__ == "__main__":

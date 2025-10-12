@@ -44,7 +44,7 @@
     ]
   },
   {
-    "id": "Product Feature (Weave Feedback System)",
+    "id": "Product Feature",
     "content": "Efficiently evaluating LLM applications requires robust tooling to collect and analyze feedback. W&B Weave provides an integrated feedback system, allowing users to provide call feedback directly through the UI or programmatically via the SDK.",
     "edge": [
       {

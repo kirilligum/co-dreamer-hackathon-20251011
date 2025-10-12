@@ -17,6 +17,8 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "litellm>=1.52.0",
     "loguru>=0.7.3",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
 ]
 
 [project.scripts]
@@ -30,6 +32,7 @@ step3-grpo = "codreamer.scripts.pipeline:main_step3"
 step4-update-kg = "codreamer.scripts.pipeline:main_step4"
 step5-evaluate = "codreamer.scripts.pipeline:main_step5"
 learn-loop = "codreamer.scripts.pipeline:main_loop"
+api = "codreamer.scripts.api:main"
 
 [build-system]
 requires = ["hatchling"]
