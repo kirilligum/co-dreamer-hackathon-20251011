@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import ReactFlow, {
-  Node as FlowNode,
-  Edge as FlowEdge,
+  type Node as FlowNode,
+  type Edge as FlowEdge,
   Background,
   Controls,
   MiniMap,
@@ -11,7 +11,7 @@ import ReactFlow, {
   Position,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Node } from '../types';
+import type { Node } from '../types';
 
 interface KnowledgeGraphProps {
   nodes: Node[];
@@ -138,7 +138,7 @@ const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({ nodes }) => {
   const [reactFlowNodes, , onNodesChange] = useNodesState(flowNodes);
   const [reactFlowEdges, , onEdgesChange] = useEdgesState(flowEdges);
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: FlowNode) => {
+  const onNodeClick = useCallback((_event: React.MouseEvent, node: FlowNode) => {
     const originalNode = nodes.find((n) => n.id === node.id);
     if (originalNode) {
       alert(

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DreamRequest } from '../types';
+import type { DreamRequest } from '../types';
 
 interface DreamFormProps {
   onSubmit: (request: DreamRequest) => void;

@@ -38,6 +38,8 @@ export class DreamerService {
     let currentGeneration = 0;
 
     // Step 3: BFS Expansion Loop
+    let lastGenerationNodes: Node[] = [];
+
     while (currentGeneration < generations_count_int && queue.length > 0) {
       console.log(`Processing generation ${currentGeneration + 1}/${generations_count_int} with ${queue.length} nodes`);
 
@@ -89,10 +91,53 @@ export class DreamerService {
 
       // Move to next generation
       queue = nextGenerationQueue;
+      lastGenerationNodes = nextGenerationQueue;
       currentGeneration++;
     }
 
-    // Step 4: Return the graph as an array
+    // Step 4: Create product node and connect all final generation nodes to it
+    const productNode: Node = {
+      id: "product",
+      content: product,
+      edge: [],
+    };
+    this.graphStore.set(productNode.id, productNode);
+
+    // Connect all leaf nodes (final generation) to the product node
+    console.log(`Connecting ${lastGenerationNodes.length} final nodes to product`);
+    for (const leafNode of lastGenerationNodes) {
+      try {
+        // Generate connection from leaf node to product using LLM
+        const connectionNodes = await this.llmService.generateNodes(
+          customer,
+          product,
+          leafNode.content,
+          1 // Generate just 1 connection to product
+        );
+
+        if (connectionNodes.length > 0) {
+          const connection = connectionNodes[0];
+          const edge: Edge = {
+            target_id: productNode.id,
+            relationship: connection.relationship,
+            rationale: connection.rationale,
+          };
+          leafNode.edge.push(edge);
+          console.log(`  Connected ${leafNode.id} -> product`);
+        }
+      } catch (error) {
+        console.error(`Error connecting ${leafNode.id} to product:`, error);
+        // Create a fallback connection
+        const edge: Edge = {
+          target_id: productNode.id,
+          relationship: "enables",
+          rationale: "This concept connects to and enables the use of the product.",
+        };
+        leafNode.edge.push(edge);
+      }
+    }
+
+    // Step 5: Return the graph as an array
     return Array.from(this.graphStore.values());
   }
 

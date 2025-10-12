@@ -1,13 +1,19 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { LLMGeneratedNode } from "./types";
 
-const GEMINI_API_KEY = "AIzaSyBrXZyZMxmbfadixyCzAkFSRqAcXxAyqGs";
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 export class LLMService {
   private genAI: GoogleGenerativeAI;
   private model: any;
 
   constructor() {
+    if (!GEMINI_API_KEY) {
+      throw new Error(
+        "GEMINI_API_KEY environment variable is not set. " +
+        "Please create a .env file with your API key or set it in your environment."
+      );
+    }
     this.genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
     this.model = this.genAI.getGenerativeModel({
       model: "gemini-2.0-flash-exp",

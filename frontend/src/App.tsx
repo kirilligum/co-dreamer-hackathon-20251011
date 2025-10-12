@@ -2,7 +2,7 @@ import { useState } from 'react';
 import DreamForm from './components/DreamForm';
 import KnowledgeGraph from './components/KnowledgeGraph';
 import { dreamerAPI } from './api';
-import { DreamRequest, Node } from './types';
+import type { DreamRequest, Node } from './types';
 import './App.css';
 
 function App() {
