@@ -6,7 +6,62 @@ Today's AI is short-sighted and sales outreach is impersonal. Existing systems a
 
 > **Built for WeaveHacks 2025**, focusing on the **"Self-Improving Agents"** and **"Reinforcement Learning"** tracks.
 
-**Table of Contents:** [Key Technical Innovations](#-key-technical-innovations) · [Our Sponsors](#-our-sponsors--how-we-used-their-tech) · [Architecture Overview](#-architecture-overview) · [Core Concepts](#-core-concepts) · [Getting Started](#-getting-started) · [User Flow & Example](#-user-flow--example) · [Tech Stack](#-tech-stack) · [What is Co-Dreamer?](#-what-is-co-dreamer) · [What's Next](#-whats-next-for-co-dreamer)
+**Table of Contents:** [Key Technical Innovations](#-key-technical-innovations) · [Our Sponsors](#-our-sponsors--how-we-used-their-tech) · [Architecture Overview](#️-architecture-overview) · [Core Concepts](#-core-concepts) · [Getting Started](#-getting-started) · [User Flow & Example](#-user-flow--example) · [Tech Stack](#️-tech-stack) · [What is Co-Dreamer?](#-what-is-co-dreamer) · [What's Next](#-whats-next-for-co-dreamer)
+
+---
+
+## 📽️ Quick Overview
+
+### Slide 1: The Problem & Our Solution
+
+**The Problem**
+
+| AI Agents are Short-Sighted | Sales Outreach is Impersonal |
+|------------------------------|------------------------------|
+| They answer questions, but they don't think ahead or build deep understanding. | It often fails because it lacks a clear, logical, multi-step argument. |
+
+**Our Solution: Let the AI Dream**
+
+A "dream" is an automated process that builds a verified knowledge graph, discovering the logical path from a customer's problem to a product's solution.
+
+```
+Customer + Product  →  [Dream Process]  →  Knowledge Graph
+```
+
+**How it Works:**
+
+- **Orchestration**: A Mastra workflow initiates the dream.
+- **Isolation**: The entire process runs in a sandboxed Daytona workspace.
+- **Generation**: Google Gemini expands the knowledge graph by creating new conceptual nodes.
+- **Verification**: Every new fact is verified against the live web with the Tavily API.
+
+**The result** is a rich, factual, and deeply reasoned map of product-market fit.
+
+---
+
+### Slide 2: From Dream to Action
+
+**The Reinforcement Learning Loop**
+
+We use the "dreamed" knowledge to power a self-improving agent that learns to create the most effective outreach.
+
+```
+Knowledge Graph  →  RL Agent  →  Email  →  Feedback  →  [RL Agent & KG Scores]
+                      ↑________________________________________________|
+```
+
+**How it Works:**
+
+- **Reason**: An RL agent, built with ART from OpenPipe, traverses the graph to find the most persuasive argument path.
+- **Act**: It generates a personalized email that presents a compelling, step-by-step case for the product.
+- **Learn**: Real-world feedback (opens, replies) is used to score the argument paths. High-performing paths are reinforced, making the agent smarter over time.
+
+**A Fully Integrated, Production-Ready System**
+
+- **End-to-End Tracing**: The entire pipeline, from trajectory generation to the GRPO update, is tracked and visualized with W&B Weave.
+- **Interactive UI**: Our frontend, built with AG-UI from CopilotKit, provides a dynamic interface for visualizing the graph and interacting with the agent.
+
+**This creates a virtuous cycle**: the agent doesn't just act—it learns, reasons, and improves with every single interaction.
 
 ---
 
