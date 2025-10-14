@@ -28,6 +28,7 @@ A "dream" is an automated process that builds a verified knowledge graph, discov
 flowchart LR
     A[Customer + Product] --> B[Dream Process] --> C[Knowledge Graph]
     style B fill:#9c27b0,color:#fff
+    style C fill:#d946ef,color:#fff
 ```
 
 **How it Works:**
@@ -54,6 +55,7 @@ flowchart LR
     C --> D[Feedback]
     D --> E[Update RL Agent & KG Scores]
     E --> B
+    style A fill:#d946ef,color:#fff
     style B fill:#6366f1,color:#fff
     style E fill:#10b981,color:#fff
 ```
