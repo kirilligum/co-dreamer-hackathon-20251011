@@ -24,8 +24,10 @@ Today's AI is short-sighted and sales outreach is impersonal. Existing systems a
 
 A "dream" is an automated process that builds a verified knowledge graph, discovering the logical path from a customer's problem to a product's solution.
 
-```
-Customer + Product  →  [Dream Process]  →  Knowledge Graph
+```mermaid
+flowchart LR
+    A[Customer + Product] --> B[Dream Process] --> C[Knowledge Graph]
+    style B fill:#9c27b0,color:#fff
 ```
 
 **How it Works:**
@@ -45,9 +47,15 @@ Customer + Product  →  [Dream Process]  →  Knowledge Graph
 
 We use the "dreamed" knowledge to power a self-improving agent that learns to create the most effective outreach.
 
-```
-Knowledge Graph  →  RL Agent  →  Email  →  Feedback  →  [RL Agent & KG Scores]
-                      ↑________________________________________________|
+```mermaid
+flowchart LR
+    A[Knowledge Graph] --> B[RL Agent]
+    B --> C[Email]
+    C --> D[Feedback]
+    D --> E[Update RL Agent & KG Scores]
+    E --> B
+    style B fill:#6366f1,color:#fff
+    style E fill:#10b981,color:#fff
 ```
 
 **How it Works:**
