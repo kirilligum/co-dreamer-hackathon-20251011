@@ -4,6 +4,123 @@
 
 This project leverages **CopilotKit** as an end-to-end, agentic framework to power a conversational interface for saas email outreach generation.
 
+## Frontend Architecture
+
+The following diagram shows the complete frontend architecture in `codreamer-agui`:
+
+```mermaid
+flowchart TD
+    Start([User Opens App]) --> CustomerPanel[Customer List Panel<br/>Multi-customer selection]
+    CustomerPanel --> LoadState{Load Customer State}
+    LoadState --> StepRouter{Current Step Router}
+
+    StepRouter -->|Step 1| Step1Panel[Step 1: Input Form Panel]
+    StepRouter -->|Step 2| Step2Panel[Step 2: KG Refinement Panel]
+    StepRouter -->|Step 3| Step3Panel[Step 3: Email Summary Panel]
+
+    Step1Panel --> FormNode[FormNode on Canvas<br/>Product + Customer descriptions]
+    FormNode --> GenKGButton[Generate KG Button]
+    GenKGButton --> GenKGAPI[API: POST /api/generate-kg<br/>Mastra workflow in Daytona]
+
+    GenKGAPI --> MastraWorkflow[Mastra Workflow]
+    MastraWorkflow --> GeminiGen[Gemini: BFS node generation]
+    GeminiGen --> TavilyVerify[Tavily: Fact verification]
+    TavilyVerify --> ReturnKG[Return KG JSON]
+
+    ReturnKG --> CreateKGNodes[Create KnowledgeNodes on canvas]
+    CreateKGNodes --> AgentStateUpdate1[Update AgentState<br/>nodes + edges]
+    AgentStateUpdate1 --> Step2Panel
+
+    Step2Panel --> ReactFlowCanvas[React Flow Canvas<br/>Visualize KG nodes/edges]
+    ReactFlowCanvas --> UserInteraction{User Interaction}
+
+    UserInteraction -->|Manual Edit| DirectEdit[Drag/edit nodes directly]
+    UserInteraction -->|Chat Command| ChatPanel[CopilotKit Chat Panel]
+
+    ChatPanel --> MastraAgent[Mastra Agent<br/>GPT-4o-mini + 12 actions]
+    MastraAgent --> AgentActions{Choose Action}
+
+    AgentActions -->|KG Actions| KGActions[7 KG Actions<br/>createNode, updateNode, deleteNode<br/>createEdge, updateEdge, deleteEdge<br/>likeNode]
+    AgentActions -->|Workflow Actions| WorkflowActions[4 Workflow Actions<br/>generateKG, generateEmail<br/>updateFormFields, runAutopilot]
+    AgentActions -->|Analytics Actions| AnalyticsActions[1 Analytics Action<br/>summarizePipeline]
+
+    KGActions --> AgentStateUpdate2[Update AgentState<br/>via useCoAgent]
+    WorkflowActions --> TriggerWorkflow[Trigger async workflow]
+    AnalyticsActions --> ReadContext[Read useCopilotReadable<br/>contexts]
+
+    TriggerWorkflow --> StateProtection{isGeneratingRef?}
+    StateProtection -->|false| AllowGen[Allow generation]
+    StateProtection -->|true| BlockGen[Block to prevent race condition]
+
+    AllowGen --> GenEmailButton[Generate Email Button/Action]
+    GenEmailButton --> GenEmailAPI[API: POST /learn-loop<br/>CoDreamer backend]
+
+    GenEmailAPI --> RLPipeline[RL Pipeline]
+    RLPipeline --> Step1RL[Step 1: Generate Trajectories<br/>Agent explores KG with tools]
+    Step1RL --> Step2RL[Step 2: Score Trajectories<br/>RULER Judge + feedback]
+    Step2RL --> Step3RL[Step 3: GRPO Update<br/>ART model.train]
+    Step3RL --> Step4RL[Step 4: Update KG Weights<br/>Boost high-reward nodes]
+
+    Step4RL --> ReturnEmail[Return email + node scores]
+    ReturnEmail --> CreateEmailNode[Create EmailNode on canvas]
+    CreateEmailNode --> UpdateNodeScores[Update nodeScores in AgentState]
+    UpdateNodeScores --> Step3Panel
+
+    DirectEdit --> AgentStateUpdate2
+    AgentStateUpdate2 --> SyncToAgent[Bidirectional Sync<br/>useCoAgent hook]
+    SyncToAgent --> ReactFlowCanvas
+
+    ReadContext --> ReturnInsight[Return formatted insight]
+    ReturnInsight --> ChatPanel
+
+    Step3Panel --> EmailDisplay[Display email with citations]
+    EmailDisplay --> HighlightNodes[Highlight high-scoring nodes<br/>on canvas]
+
+    style Step1Panel fill:#e3f2fd
+    style Step2Panel fill:#fff3e0
+    style Step3Panel fill:#e8f5e9
+    style MastraAgent fill:#9c27b0,color:#fff
+    style RLPipeline fill:#6366f1,color:#fff
+    style StateProtection fill:#ff9800,color:#fff
+    style SyncToAgent fill:#00bcd4,color:#fff
+```
+
+### Key Components Explained
+
+1. **Multi-Customer State Management**
+   - Each customer has isolated `AgentState` in `customerStates` map
+   - Switching customer loads their saved state via `useCoAgent`
+
+2. **3-Step Workflow**
+   - **Step 1**: Input form with product/customer descriptions
+   - **Step 2**: KG refinement with React Flow canvas + chat editing
+   - **Step 3**: Email summary with node score visualization
+
+3. **CopilotKit Integration**
+   - `useCoAgent`: Shared state between UI and Mastra agent
+   - `useCopilotAction`: 12 actions (7 KG, 4 workflow, 1 analytics)
+   - `useCopilotReadable`: 3 contexts (customer list, workflow states, pipeline stats)
+   - `useCopilotAdditionalInstructions`: Dynamic workflow context
+
+4. **State Protection**
+   - `isGeneratingRef` prevents race conditions during long-running operations
+   - Agent state updates are blocked while KG/email generation is in progress
+
+5. **API Integration**
+   - `/api/generate-kg`: Mastra workflow in Daytona (Gemini + Tavily)
+   - `/learn-loop`: CoDreamer RL pipeline (ART + W&B Weave)
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `codreamer-agui/src/app/page.tsx` | Main frontend component with CopilotKit hooks |
+| `codreamer-agui/src/app/api/agent/route.ts` | Mastra agent API endpoint |
+| `codreamer-agui/src/app/api/generate-kg/route.ts` | KG generation API (calls Mastra workflow) |
+| `codreamer-agui/src/components/Canvas.tsx` | React Flow canvas for KG visualization |
+| `codreamer-agui/src/components/StepPanel.tsx` | Step-specific UI panels |
+| `codreamer-agui/src/components/CustomerPanel.tsx` | Multi-customer selection sidebar |
+
 ## Key Features Enabled by CopilotKit
 
 ### 1. Chat-First Workflow Automation

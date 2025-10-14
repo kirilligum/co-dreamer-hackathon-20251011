@@ -80,6 +80,7 @@ graph TD
 ```
 
 > **📊 For detailed workflow diagrams:**
+> - **Frontend UI & CopilotKit integration** (React Flow canvas, agent actions, workflow states): [COPILOTKIT.md](./COPILOTKIT.md)
 > - **Knowledge Graph generation** (BFS expansion, Daytona workspace lifecycle, fact verification): [mastra/README.md](./mastra/README.md)
 > - **Reinforcement Learning pipeline** (trajectory generation, GRPO updates, KG weight updates): [ART_RL.md](./ART_RL.md)
 
