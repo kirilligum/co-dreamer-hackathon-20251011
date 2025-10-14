@@ -27,7 +27,7 @@ flowchart TD
     GeminiGen --> TavilyVerify[Tavily: Fact verification]
     TavilyVerify --> ReturnKG[Return KG JSON]
 
-    ReturnKG --> CreateKGNodes[Create KnowledgeNode[] on canvas]
+    ReturnKG --> CreateKGNodes[Create KnowledgeNodes on canvas]
     CreateKGNodes --> AgentStateUpdate1[Update AgentState<br/>nodes + edges]
     AgentStateUpdate1 --> Step2Panel
 
