@@ -2,6 +2,99 @@
 
 This project uses the ART library for GRPO-style reinforcement learning updates. We create a `TrainableModel`, register a serverless backend, generate trajectory groups, score them, and call `model.train(...)` with `TrainConfig`.
 
+## RL Pipeline Architecture
+
+The following diagram shows the complete reinforcement learning loop in the `codreamer` backend:
+
+```mermaid
+flowchart TD
+    Start([API Request: /learn-loop]) --> Init[Initialize Run ID & Results Directory]
+    Init --> ResetScores[Reset Node Scores to 1.0]
+    ResetScores --> BaseEmail[Generate Baseline Email<br/>Iteration 0]
+
+    BaseEmail --> LoopStart{For each<br/>iteration}
+
+    LoopStart -->|Yes| Step1[Step 1: Generate Trajectories]
+    Step1 --> LoadScenarios[Load Synthetic Scenarios<br/>Customer + Product pairs]
+    LoadScenarios --> CreateGroups[Create Trajectory Groups<br/>K rollouts per scenario]
+    CreateGroups --> Rollout[Rollout Function]
+
+    Rollout --> AgentLoop{Agent Loop<br/>Max Turns}
+    AgentLoop --> GetConnected[Tool: get_connected_nodes<br/>Browse KG structure]
+    GetConnected --> GetContext[Tool: get_relevant_context<br/>node_id → Extract facts + citations]
+    GetContext --> ProposeEmail[Tool: propose_email<br/>Draft subject/body]
+    ProposeEmail --> FinalizeEmail[Tool: finalize_email<br/>subject, body, citations]
+
+    FinalizeEmail --> TrajectoryComplete[Trajectory with final_email]
+
+    TrajectoryComplete --> Step2[Step 2: Score Trajectories]
+    Step2 --> RULERScore[RULER Judge<br/>LLM evaluates email quality]
+    RULERScore --> BlendScore[Blend with online feedback<br/>Email open/reply rates]
+    BlendScore --> AssignReward[Assign reward to trajectory]
+
+    AssignReward --> Step3[Step 3: GRPO Update]
+    Step3 --> ARTTrain[ART model.train<br/>judged_groups, TrainConfig]
+    ARTTrain --> ServerlessBackend[OpenPipe Serverless Backend<br/>Checkpoint + Policy Update]
+
+    ServerlessBackend --> Step4[Step 4: Update KG Weights]
+    Step4 --> IdentifyTop[Identify top 50% trajectories<br/>by reward]
+    IdentifyTop --> ExtractCitations[Extract node citations<br/>from high-reward emails]
+    ExtractCitations --> BoostWeights[Boost node weights<br/>KGScorer.update_from_trajectory]
+
+    BoostWeights --> SaveSnapshot[Save node_scores.json snapshot]
+    SaveSnapshot --> GenIterEmail[Generate iteration email<br/>with updated model]
+    GenIterEmail --> LogMetrics[Log rewards metrics<br/>mean, median, min, max]
+    LogMetrics --> WeaveTrace[W&B Weave trace<br/>Trajectory + Score + Policy]
+
+    WeaveTrace --> NotifyFrontend[Webhook to Frontend<br/>Email + Node Scores]
+    NotifyFrontend --> LoopStart
+
+    LoopStart -->|No| FinalAlias[Alias final_email.json<br/>Last iteration email]
+    FinalAlias --> End([Return run_id & results_path])
+
+    style Step1 fill:#e3f2fd
+    style Step2 fill:#fff3e0
+    style Step3 fill:#f3e5f5
+    style Step4 fill:#e8f5e9
+    style ARTTrain fill:#9c27b0,color:#fff
+    style WeaveTrace fill:#6366f1,color:#fff
+    style NotifyFrontend fill:#ff5722,color:#fff
+```
+
+### Pipeline Steps Explained
+
+1. **Step 1: Generate Trajectories**
+   - Load customer scenarios (prospect + goal + seed nodes)
+   - For each scenario, create K rollouts (default: 4)
+   - Agent uses KG tools to explore graph and draft personalized email
+   - Output: `TrajectoryGroup` with `messages_and_choices` + `final_email`
+
+2. **Step 2: Score Trajectories**
+   - RULER LLM Judge evaluates email quality (relevance, persuasiveness, coherence)
+   - Blend with simulated/real online feedback (open rates, reply rates)
+   - Assign `reward` (0-1 scale) to each trajectory
+
+3. **Step 3: GRPO Update**
+   - Call `model.train(judged_groups, TrainConfig(learning_rate=...))`
+   - ART/OpenPipe serverless backend applies Group Relative Policy Optimization
+   - Model learns: "Which KG paths lead to high-reward emails?"
+
+4. **Step 4: Update KG Weights**
+   - Extract node citations from top 50% of trajectories
+   - Boost `node_scores.json` for cited nodes (weighted by trajectory reward)
+   - Future iterations prioritize high-scoring nodes in KG traversal
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `codreamer/scripts/api.py` | FastAPI endpoint `/learn-loop` |
+| `codreamer/scripts/pipeline.py` | 5-step pipeline orchestration |
+| `codreamer/training/rollout.py` | Agent rollout with KG tools |
+| `codreamer/training/rewards.py` | RULER scoring + reward blending |
+| `codreamer/knowledge_graph/kg_scoring.py` | Node weight updates |
+| `codreamer/training/model_setup.py` | ART TrainableModel creation |
+
 Features used:
 - `TrainableModel` with `ServerlessBackend` registration
 - Trajectory types: `Trajectory`, `TrajectoryGroup` for rollouts and batching
