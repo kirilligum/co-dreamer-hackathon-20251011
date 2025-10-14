@@ -1,6 +1,6 @@
 # CO-DREAMER: Passively discovering and learning new knowledge.
 
-Today's AI is short-sighted and most sales outreach is impersonal. Existing systems are reactive, responding only when prompted, and they struggle with the factual, multi-step reasoning needed for genuine personalization.
+Today's AI is short-sighted and sales outreach is impersonal. Existing systems are reactive, responding only when prompted, and they struggle with the factual, multi-step reasoning needed for genuine personalization.
 
 **Co-Dreamer** tackles these problems with a novel approach: we let our AI "dream." It is an end-to-end system where an AI agent passively discovers and expands its own knowledge graph. To combat the critical issue of hallucination, every piece of self-acquired knowledge is verified against real-world sources, creating a reliable foundation for complex reasoning. This allows the agent to generate deeply personalized sales outreach that is continuously improved through a reinforcement learning loop. The entire process is managed through a unique human-in-the-loop interface where the UI state is shared directly with the LLM agent, enabling seamless, conversational control.
 
@@ -29,15 +29,15 @@ Today's AI is short-sighted and most sales outreach is impersonal. Existing syst
 
 This project was made possible by leveraging the powerful tools provided by our sponsors. We integrated their technologies to build a robust, production-ready, and scalable AI system in just 48 hours.
 
-| Sponsor | How We Used It | Learn More |
-|---------|---------------|------------|
-| **W&B Weave** | For end-to-end tracing and observability of our entire RL pipeline, from trajectory generation to reward scoring and model updates. | [W&B Weave Details](./WANDB_WEAVE.md) |
-| **Mastra** | As the core TypeScript framework to orchestrate our complex, multi-step knowledge graph generation workflows and manage agent state. | [Mastra Usage](./mastra/README.md) |
-| **Daytona** | To run each "dream" (KG generation) in isolated cloud containers—enabling truly parallel, scalable knowledge graph generation in the cloud without local resource constraints. | [daytona-service.ts](./mastra/src/dreamer/daytona-service.ts) |
-| **AG-UI (CopilotKit)** | To build the interactive frontend, enabling real-time visualization of the knowledge graph and allowing users to edit the graph via a natural language chat agent. | [CopilotKit Integration](./COPILOTKIT.md) |
-| **Tavily** | For real-time fact-checking of every piece of knowledge the AI "dreams" up, ensuring our knowledge graph is built on a foundation of truth. | [verification-service.ts](./mastra/src/dreamer/verification-service.ts) |
-| **ART (from OpenPipe)** | As the serverless reinforcement learning framework to fine-tune our agent using Group Relative Policy Optimization (GRPO) on feedback from email performance. | [ART RL Details](./ART_RL.md) |
-| **Google Cloud** | Powering our knowledge generation with the Gemini 2.5 Flash-Lite model for fast, cost-effective, and high-quality structured JSON output. | [llm-service.ts](./mastra/src/dreamer/llm-service.ts) |
+| Sponsor                 | How We Used It                                                                                                                                                                 | Learn More                                                              |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| **W&B Weave**           | For end-to-end tracing and observability of our entire RL pipeline, from trajectory generation to reward scoring and model updates.                                            | [W&B Weave Details](./WANDB_WEAVE.md)                                   |
+| **Mastra**              | As the core TypeScript framework to orchestrate our complex, multi-step knowledge graph generation workflows and manage agent state.                                           | [Mastra Usage](./mastra/README.md)                                      |
+| **Daytona**             | To run each "dream" (KG generation) in isolated cloud containers—enabling truly parallel, scalable knowledge graph generation in the cloud without local resource constraints. | [daytona-service.ts](./mastra/src/dreamer/daytona-service.ts)           |
+| **AG-UI (CopilotKit)**  | To build the interactive frontend, enabling real-time visualization of the knowledge graph and allowing users to edit the graph via a natural language chat agent.             | [CopilotKit Integration](./COPILOTKIT.md)                               |
+| **Tavily**              | For real-time fact-checking of every piece of knowledge the AI "dreams" up, ensuring our knowledge graph is built on a foundation of truth.                                    | [verification-service.ts](./mastra/src/dreamer/verification-service.ts) |
+| **ART (from OpenPipe)** | As the serverless reinforcement learning framework to fine-tune our agent using Group Relative Policy Optimization (GRPO) on feedback from email performance.                  | [ART RL Details](./ART_RL.md)                                           |
+| **Google Cloud**        | Powering our knowledge generation with the Gemini 2.5 Flash-Lite model for fast, cost-effective, and high-quality structured JSON output.                                      | [llm-service.ts](./mastra/src/dreamer/llm-service.ts)                   |
 
 ---
 
@@ -80,6 +80,7 @@ graph TD
 ```
 
 > **📊 For detailed workflow diagrams:**
+>
 > - **Frontend UI & CopilotKit integration** (React Flow canvas, agent actions, workflow states): [COPILOTKIT.md](./COPILOTKIT.md)
 > - **Knowledge Graph generation** (BFS expansion, Daytona workspace lifecycle, fact verification): [mastra/README.md](./mastra/README.md)
 > - **Reinforcement Learning pipeline** (trajectory generation, GRPO updates, KG weight updates): [ART_RL.md](./ART_RL.md)
@@ -190,22 +191,26 @@ The mastra service is automatically started by the frontend's Next.js server whe
 1. **Open the App**: Navigate to http://localhost:3000.
 
 2. **Step 1: Input Data**:
+
    - In the "Input Form" on the left, you'll see pre-filled descriptions for a customer ("Pearls of Wisdom") and a product ("W&B Weave").
    - Click the **"Generate KG"** button.
 
 3. **The Dream Happens in the Cloud**:
+
    - The Mastra service spins up an isolated Daytona cloud container.
    - Inside the container, it calls Gemini to generate nodes and Tavily to verify them.
    - A knowledge graph will appear on the canvas, with nodes automatically arranged.
    - The container is automatically cleaned up after the dream completes.
 
 4. **Step 2: Refine the Graph**:
+
    - Review the generated nodes. You can drag them, edit their content, or use the "Like/Dislike" buttons.
    - Open the chat panel on the right and ask the agent to make changes:
-     - *"Create a new node about data privacy"*
-     - *"Connect the 'data-privacy' node to 'synthetic-data-bias'"*
+     - _"Create a new node about data privacy"_
+     - _"Connect the 'data-privacy' node to 'synthetic-data-bias'"_
 
 5. **Step 3: Generate the Email**:
+
    - Once you're happy with the graph, click the **"Generate Email"** button.
    - This sends the graph to the `codreamer` backend. The ART agent runs its RL pipeline, traced by W&B Weave.
    - After 30-60 seconds, a personalized email will appear in the "Email Summary" panel. The graph nodes will now show scores, indicating which facts were most influential.
