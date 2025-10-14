@@ -6,6 +6,8 @@ Today's AI is short-sighted and sales outreach is impersonal. Existing systems a
 
 > **Built for WeaveHacks 2025**, focusing on the **"Self-Improving Agents"** and **"Reinforcement Learning"** tracks.
 
+**Table of Contents:** [Key Technical Innovations](#-key-technical-innovations) · [Our Sponsors](#-our-sponsors--how-we-used-their-tech) · [Architecture Overview](#-architecture-overview) · [Core Concepts](#-core-concepts) · [Getting Started](#-getting-started) · [User Flow & Example](#-user-flow--example) · [Tech Stack](#-tech-stack) · [What is Co-Dreamer?](#-what-is-co-dreamer) · [What's Next](#-whats-next-for-co-dreamer)
+
 ---
 
 ## 🚀 Key Technical Innovations
