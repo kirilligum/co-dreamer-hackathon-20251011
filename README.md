@@ -6,6 +6,178 @@
 
 ---
 
+## 🚀 Key Features & Technical Innovations
+
+### Why Co-Dreamer is Different
+
+Traditional AI systems are **reactive** and **context-limited**. They respond to prompts but don't learn autonomously, they rely on static RAG databases, and they can't improve from feedback. Co-Dreamer breaks this mold with a fundamentally different approach:
+
+### 🧠 **1. Autonomous Knowledge Expansion ("Dreaming in the Cloud")**
+**Conventional Approach:** Static knowledge bases, manual curation, retrieval from fixed datasets.
+
+**Co-Dreamer's Innovation:**
+- **Passive Learning**: The AI autonomously "dreams" new knowledge by exploring logical connections between concepts
+- **Cloud-Native Execution**: Each dream runs in isolated Daytona cloud containers, enabling massive parallel processing
+- **Generative Graph Building**: Uses LLMs to generate atomic, verifiable facts (nodes) and relationships (edges) in real-time
+- **Multi-step Reasoning Paths**: Creates complex argument chains, not just single-hop associations
+- **Breadth-First Exploration**: Systematically expands knowledge graphs level-by-level with configurable depth and branching
+
+**Technical Implementation:**
+```typescript
+// Mastra workflow orchestrates BFS expansion
+// Each generation creates N children per parent node
+Generation 1: Customer → 2 nodes
+Generation 2: 2 nodes → 4 nodes
+Generation 3: 4 nodes → 8 nodes → Product
+```
+
+---
+
+### ✅ **2. Real-Time Fact Verification**
+**Conventional Approach:** Accept LLM hallucinations, post-hoc fact-checking, or no verification at all.
+
+**Co-Dreamer's Innovation:**
+- **Web-Grounded Truth**: Every single generated node is verified against live web search (Tavily)
+- **Confidence Scoring**: Each fact gets a 0-1 confidence score with supporting sources
+- **Hallucination Prevention**: Unverified knowledge is flagged or rejected before entering the graph
+- **Citation Tracking**: Maintains source URLs for every piece of knowledge
+
+**Technical Implementation:**
+```typescript
+// verification-service.ts
+async verifyNode(content: string): VerificationResult {
+  const searchResults = await tavily.search(content);
+  return {
+    verified: confidence > 0.7,
+    confidence: score,
+    sources: urls,
+    summary: aiGeneratedExplanation
+  };
+}
+```
+
+---
+
+### 🔄 **3. Closed-Loop Reinforcement Learning**
+**Conventional Approach:** Static prompt engineering, A/B testing with manual analysis, no learning from outcomes.
+
+**Co-Dreamer's Innovation:**
+- **Online Learning**: The agent improves continuously from real-world feedback (email open rates, replies)
+- **GRPO (Group Relative Policy Optimization)**: State-of-the-art RL algorithm for fine-tuning on trajectory outcomes
+- **Graph-Based Reasoning**: Agent learns which argument paths are most persuasive, not just which words to use
+- **Credit Assignment**: Nodes in successful email arguments get higher weights for future use
+
+**Technical Implementation:**
+```python
+# ART (OpenPipe) RL pipeline
+1. Generate K email trajectories by traversing KG
+2. Score each trajectory with LLM Judge
+3. Update agent policy with GRPO
+4. Weight KG nodes by their contribution to high-scoring emails
+```
+
+---
+
+### 🎯 **4. Graph-Structured RAG (Not Vector-Based)**
+**Conventional Approach:** Vector embeddings, semantic similarity search, flat retrieval, no explicit reasoning chains.
+
+**Co-Dreamer's Innovation:**
+- **Explicit Reasoning Paths**: Every email argument follows a traceable path through the knowledge graph
+- **Multi-hop Inference**: Supports complex arguments like "Customer needs X → X requires Y → Y is solved by Product"
+- **Edge Semantics**: Relationships are typed (e.g., "creates challenge of", "addressed by") for interpretability
+- **Pathfinding Algorithms**: Uses graph traversal (shortest path, BFS) to find optimal argument sequences
+
+**Technical Implementation:**
+```python
+# Find persuasive paths from customer to product
+paths = graph.find_all_paths(
+    source="customer-job-node",
+    target="product-feature-node",
+    max_depth=5
+)
+# Agent explores paths to generate diverse email arguments
+```
+
+---
+
+### 🔬 **5. Cloud-Native Isolated Execution (Dreaming in Containers)**
+**Conventional Approach:** Run everything locally or in shared cloud instances, inconsistent environments, hard to debug.
+
+**Co-Dreamer's Innovation:**
+- **Daytona Cloud Containers**: Each "dream" runs in its own isolated cloud container with full execution environment
+- **Ephemeral Workspaces**: Spin up, execute, and tear down in seconds—no server management
+- **Checkpoint System**: Saves graph state at each generation for resume/rollback
+- **Parallel Processing**: Scale to hundreds of concurrent dreams without local resource limits
+- **Observable Logs**: Every step (LLM calls, verifications, graph updates) is logged to cloud workspace
+
+**Technical Implementation:**
+```typescript
+// Each dream gets its own isolated cloud container
+const workspace = await daytona.create(); // Spins up container in cloud
+await workspace.exec("generate-graph");   // Runs in isolated environment
+await workspace.saveCheckpoint("gen-3");  // Persists to cloud storage
+// Auto-cleanup or keep for debugging
+```
+
+---
+
+### 🎨 **6. Human-in-the-Loop Graph Editing with AI Agent**
+**Conventional Approach:** Edit raw JSON, no visualization, batch operations require custom scripts.
+
+**Co-Dreamer's Innovation:**
+- **Natural Language Commands**: "Create a node about data privacy and connect it to synthetic-data-bias"
+- **Batch Editing**: Single command updates dozens of nodes/edges simultaneously
+- **Visual Feedback**: React Flow renders the graph in real-time with auto-layout
+- **Bidirectional Sync**: UI changes update agent state, agent actions update UI instantly
+
+**Technical Implementation:**
+```typescript
+// CopilotKit agent actions
+useCopilotAction({
+  name: "createNode",
+  handler: async ({ content }) => {
+    const node = { id: generateId(), content };
+    setNodes([...nodes, node]);
+    applyDagreLayout(); // Auto-arrange
+  }
+});
+```
+
+---
+
+### 📊 **7. Full RL Pipeline Observability**
+**Conventional Approach:** Black-box model training, logs scattered across files, hard to debug reward signals.
+
+**Co-Dreamer's Innovation:**
+- **W&B Weave Integration**: Every RL step is traced (trajectory generation, scoring, policy update)
+- **Visual Dashboards**: See which KG paths lead to high-reward emails in real-time
+- **Trajectory Comparison**: Compare multiple email drafts side-by-side with their scores
+- **Reward Attribution**: Understand exactly why the agent chose specific nodes
+
+**Technical Implementation:**
+```python
+@weave.op()
+def generate_trajectory(kg, agent):
+    path = agent.explore(kg)
+    email = generate_email(path)
+    score = judge.score(email)
+    weave.log({"path": path, "email": email, "score": score})
+    return email, score
+```
+
+---
+
+### 🏗️ **8. Production-Ready Monorepo Architecture**
+**Conventional Approach:** Separate repos for frontend/backend, manual API versioning, inconsistent tooling.
+
+**Co-Dreamer's Innovation:**
+- **Unified Codebase**: Frontend (TypeScript), KG Service (TypeScript/Mastra), RL Backend (Python) in one repo
+- **Type-Safe APIs**: Shared TypeScript types between frontend and KG service
+- **Consistent Dev Experience**: Single `npm install` + `uv sync` gets everything running
+- **Microservices-Ready**: Each component can be deployed independently (Hono, FastAPI, Next.js)
+
+---
+
 ## ✨ Our Sponsors & How We Used Their Tech
 
 This project was made possible by leveraging the powerful tools provided by our sponsors. We integrated their technologies to build a robust, production-ready, and scalable AI system in just 48 hours.
@@ -14,7 +186,7 @@ This project was made possible by leveraging the powerful tools provided by our 
 |---------|---------------|------------|
 | **W&B Weave** | For end-to-end tracing and observability of our entire RL pipeline, from trajectory generation to reward scoring and model updates. | [W&B Weave Details](./WANDB_WEAVE.md) |
 | **Mastra** | As the core TypeScript framework to orchestrate our complex, multi-step knowledge graph generation workflows and manage agent state. | [Mastra Usage](./mastra/README.md) |
-| **Daytona** | To run each "dream" (KG generation) in a fast, isolated, and scalable cloud development environment, ensuring reproducibility and enabling parallel processing. | [daytona-service.ts](./mastra/src/dreamer/daytona-service.ts) |
+| **Daytona** | To run each "dream" (KG generation) in isolated cloud containers—enabling truly parallel, scalable knowledge graph generation in the cloud without local resource constraints. | [daytona-service.ts](./mastra/src/dreamer/daytona-service.ts) |
 | **AG-UI (CopilotKit)** | To build the interactive frontend, enabling real-time visualization of the knowledge graph and allowing users to edit the graph via a natural language chat agent. | [CopilotKit Integration](./COPILOTKIT.md) |
 | **Tavily** | For real-time fact-checking of every piece of knowledge the AI "dreams" up, ensuring our knowledge graph is built on a foundation of truth. | [verification-service.ts](./mastra/src/dreamer/verification-service.ts) |
 | **ART (from OpenPipe)** | As the serverless reinforcement learning framework to fine-tune our agent using Group Relative Policy Optimization (GRPO) on feedback from email performance. | [ART RL Details](./ART_RL.md) |
@@ -64,14 +236,15 @@ graph TD
 
 ## 🧠 Core Concepts
 
-### 1. The "Dream": Knowledge Graph Generation
+### 1. The "Dream": Knowledge Graph Generation in the Cloud
 
 The process starts with a **"dream,"** where the system autonomously builds a knowledge graph.
 
 - **Input**: A customer description (Customer Job) and a product description (Product Feature).
-- **Process**: A Mastra workflow, running in an isolated Daytona workspace, uses Gemini to generate new "nodes" (atomic facts) that logically connect the customer to the product.
+- **Process**: A Mastra workflow, running in an isolated Daytona cloud container, uses Gemini to generate new "nodes" (atomic facts) that logically connect the customer to the product.
 - **Verification**: Each new node is fact-checked against the web using Tavily.
 - **Output**: A JSON knowledge graph representing a verified, multi-step argument path.
+- **Cloud Execution**: The entire dream runs in an ephemeral cloud container, enabling parallel processing of multiple knowledge graphs simultaneously.
 
 ### 2. The Action: Reinforcement Learning for Outreach
 
@@ -168,10 +341,11 @@ The mastra service is automatically started by the frontend's Next.js server whe
    - In the "Input Form" on the left, you'll see pre-filled descriptions for a customer ("Pearls of Wisdom") and a product ("W&B Weave").
    - Click the **"Generate KG"** button.
 
-3. **The Dream Happens**:
-   - The Mastra service spins up a Daytona workspace.
-   - It calls Gemini to generate nodes and Tavily to verify them.
+3. **The Dream Happens in the Cloud**:
+   - The Mastra service spins up an isolated Daytona cloud container.
+   - Inside the container, it calls Gemini to generate nodes and Tavily to verify them.
    - A knowledge graph will appear on the canvas, with nodes automatically arranged.
+   - The container is automatically cleaned up after the dream completes.
 
 4. **Step 2: Refine the Graph**:
    - Review the generated nodes. You can drag them, edit their content, or use the "Like/Dislike" buttons.
