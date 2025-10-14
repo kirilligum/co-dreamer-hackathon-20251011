@@ -1,6 +1,8 @@
-# Co-Dreamer: An AI That Dreams to Learn, Reason, and Act
+# CO-DREAMER: Passively discovering and learning new knowledge.
 
-**Co-Dreamer** is an end-to-end system where an AI agent passively learns and expands its own knowledge graph—a process we call "dreaming." It then uses this self-acquired, verified knowledge to perform complex reasoning tasks, like generating deeply personalized sales outreach that is continuously improved through a reinforcement learning loop.
+Today's AI is short-sighted and most sales outreach is impersonal. Existing systems are reactive, responding only when prompted, and they struggle with the factual, multi-step reasoning needed for genuine personalization.
+
+**Co-Dreamer** tackles these problems with a novel approach: we let our AI "dream." It is an end-to-end system where an AI agent passively discovers and expands its own knowledge graph. To combat the critical issue of hallucination, every piece of self-acquired knowledge is verified against real-world sources, creating a reliable foundation for complex reasoning. This allows the agent to generate deeply personalized sales outreach that is continuously improved through a reinforcement learning loop. The entire process is managed through a unique human-in-the-loop interface where the UI state is shared directly with the LLM agent, enabling seamless, conversational control.
 
 > **Built for WeaveHacks 2025**, focusing on the **"Self-Improving Agents"** and **"Reinforcement Learning"** tracks.
 
@@ -76,6 +78,10 @@ graph TD
     classDef sponsor fill:#6366f1,stroke:#4f46e5,color:#fff;
     class D1,D2,D3,D4,I,G,B sponsor;
 ```
+
+> **📊 For detailed workflow diagrams:**
+> - **Knowledge Graph generation** (BFS expansion, Daytona workspace lifecycle, fact verification): [mastra/README.md](./mastra/README.md)
+> - **Reinforcement Learning pipeline** (trajectory generation, GRPO updates, KG weight updates): [ART_RL.md](./ART_RL.md)
 
 ---
 
