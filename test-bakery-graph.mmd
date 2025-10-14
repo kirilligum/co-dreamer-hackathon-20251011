@@ -1,0 +1,38 @@
+graph TB
+
+  %% Node Styles
+  classDef customerClass fill:#6366f1,stroke:#4f46e5,stroke-width:3px,color:#fff
+  classDef productClass fill:#10b981,stroke:#059669,stroke-width:3px,color:#fff
+  classDef dreamClass fill:#f3f4f6,stroke:#6366f1,stroke-width:2px
+
+  %% Nodes
+  CustomerJob["Customer Job: Small bakery wanting to sell online"]
+  local_marketing_strategies_bf83f7a6["local marketing strategies"]
+  payment_processing_options_7d09900a["payment processing options"]
+  target_market_segmentation_8db78cde["target market segmentation"]
+  e_commerce_email_marketing_2e4bfc0c["e commerce email marketing"]
+  pci_dss_compliance_72759261["pci dss compliance"]
+  payment_gateway_comparison_9ddaab97["payment gateway comparison"]
+  ProductFeature["Product Feature: Shopify e-commerce platform"]
+
+  %% Apply Styles
+  class CustomerJob customerClass
+  class local_marketing_strategies_bf83f7a6 dreamClass
+  class payment_processing_options_7d09900a dreamClass
+  class target_market_segmentation_8db78cde dreamClass
+  class e_commerce_email_marketing_2e4bfc0c dreamClass
+  class pci_dss_compliance_72759261 dreamClass
+  class payment_gateway_comparison_9ddaab97 dreamClass
+  class ProductFeature productClass
+
+  %% Edges
+  CustomerJob -->|"benefits from"| local_marketing_strategies_bf83f7a6
+  CustomerJob -->|"requires"| payment_processing_options_7d09900a
+  local_marketing_strategies_bf83f7a6 -->|"enables"| target_market_segmentation_8db78cde
+  local_marketing_strategies_bf83f7a6 -->|"supports"| e_commerce_email_marketing_2e4bfc0c
+  payment_processing_options_7d09900a -->|"necessitates"| pci_dss_compliance_72759261
+  payment_processing_options_7d09900a -->|"relies on"| payment_gateway_comparison_9ddaab97
+  target_market_segmentation_8db78cde -->|"includes"| ProductFeature
+  e_commerce_email_marketing_2e4bfc0c -->|"requires"| ProductFeature
+  pci_dss_compliance_72759261 -->|"necessitates"| ProductFeature
+  payment_gateway_comparison_9ddaab97 -->|"requires"| ProductFeature

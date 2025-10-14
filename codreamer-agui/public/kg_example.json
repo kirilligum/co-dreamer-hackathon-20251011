@@ -1,0 +1,29 @@
+[
+  {
+    "id": "Customer Job",
+    "content": "Pearls of Wisdom generates synthetic data sets for training AI models",
+    "edges": [
+      {
+        "target_id": "synthetic-data-quality-a1b2c3",
+        "relationship": "faces challenge of",
+        "rationale": "Ensuring synthetic data maintains statistical properties and realism"
+      }
+    ]
+  },
+  {
+    "id": "synthetic-data-quality-a1b2c3",
+    "content": "Validating quality and bias in synthetic training data",
+    "edges": [
+      {
+        "target_id": "Product Feature",
+        "relationship": "addressed by",
+        "rationale": "W&B Weave provides UI for feedback collection and evaluation"
+      }
+    ]
+  },
+  {
+    "id": "Product Feature",
+    "content": "Weights and Biases Weave, featuring a UI for feedback and model evaluation",
+    "edges": []
+  }
+]

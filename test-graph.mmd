@@ -1,0 +1,38 @@
+graph TB
+
+  %% Node Styles
+  classDef customerClass fill:#6366f1,stroke:#4f46e5,stroke-width:3px,color:#fff
+  classDef productClass fill:#10b981,stroke:#059669,stroke-width:3px,color:#fff
+  classDef dreamClass fill:#f3f4f6,stroke:#6366f1,stroke-width:2px
+
+  %% Nodes
+  root["Customer: Coffee shop looking to expand"]
+  coffee-shop-profitability-df31d5c3["coffee shop profitability"]
+  expansion-financing-options-c578f72b["expansion financing options"]
+  coffee-shop-inventory-management-83a23ac5["coffee shop inventory manageme..."]
+  coffee-shop-labor-costs-5124effc["coffee shop labor costs"]
+  small-business-loan-requirements-45688590["small business loan requiremen..."]
+  revenue-based-financing-terms-60d44354["revenue based financing terms"]
+  product["Product: Square POS system"]
+
+  %% Apply Styles
+  class root customerClass
+  class coffee-shop-profitability-df31d5c3 dreamClass
+  class expansion-financing-options-c578f72b dreamClass
+  class coffee-shop-inventory-management-83a23ac5 dreamClass
+  class coffee-shop-labor-costs-5124effc dreamClass
+  class small-business-loan-requirements-45688590 dreamClass
+  class revenue-based-financing-terms-60d44354 dreamClass
+  class product productClass
+
+  %% Edges
+  root -->|"impacts"| coffee-shop-profitability-df31d5c3
+  root -->|"requires"| expansion-financing-options-c578f72b
+  coffee-shop-profitability-df31d5c3 -->|"influenced by"| coffee-shop-inventory-management-83a23ac5
+  coffee-shop-profitability-df31d5c3 -->|"impacts"| coffee-shop-labor-costs-5124effc
+  expansion-financing-options-c578f72b -->|"requires"| small-business-loan-requirements-45688590
+  expansion-financing-options-c578f72b -->|"involves"| revenue-based-financing-terms-60d44354
+  coffee-shop-inventory-management-83a23ac5 -->|"requires"| product
+  coffee-shop-labor-costs-5124effc -->|"influences"| product
+  small-business-loan-requirements-45688590 -->|"describes"| product
+  revenue-based-financing-terms-60d44354 -->|"necessitates"| product

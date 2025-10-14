@@ -1,0 +1,38 @@
+graph TB
+
+  %% Node Styles
+  classDef customerClass fill:#6366f1,stroke:#4f46e5,stroke-width:3px,color:#fff
+  classDef productClass fill:#10b981,stroke:#059669,stroke-width:3px,color:#fff
+  classDef dreamClass fill:#f3f4f6,stroke:#6366f1,stroke-width:2px
+
+  %% Nodes
+  CustomerJob["Customer Job: Coffee shop looking to expand"]
+  coffee_shop_operations_4aff171a["coffee shop operations"]
+  payment_processing_methods_8081fabf["payment processing methods"]
+  inventory_management_practices_f48aa168["inventory management practices"]
+  payment_method_variety_03c76a8a["payment method variety"]
+  small_business_accounting_3938f38e["small business accounting"]
+  transaction_fee_structures_acaf97c1["transaction fee structures"]
+  ProductFeature["Product Feature: Square POS system"]
+
+  %% Apply Styles
+  class CustomerJob customerClass
+  class coffee_shop_operations_4aff171a dreamClass
+  class payment_processing_methods_8081fabf dreamClass
+  class inventory_management_practices_f48aa168 dreamClass
+  class payment_method_variety_03c76a8a dreamClass
+  class small_business_accounting_3938f38e dreamClass
+  class transaction_fee_structures_acaf97c1 dreamClass
+  class ProductFeature productClass
+
+  %% Edges
+  CustomerJob -->|"encompasses"| coffee_shop_operations_4aff171a
+  CustomerJob -->|"involves"| payment_processing_methods_8081fabf
+  coffee_shop_operations_4aff171a -->|"relies on"| inventory_management_practices_f48aa168
+  coffee_shop_operations_4aff171a -->|"relies on"| payment_method_variety_03c76a8a
+  payment_processing_methods_8081fabf -->|"necessitates"| small_business_accounting_3938f38e
+  payment_processing_methods_8081fabf -->|"relies on"| transaction_fee_structures_acaf97c1
+  inventory_management_practices_f48aa168 -->|"contributes to"| ProductFeature
+  payment_method_variety_03c76a8a -->|"relies on"| ProductFeature
+  small_business_accounting_3938f38e -->|"affects"| ProductFeature
+  transaction_fee_structures_acaf97c1 -->|"related to"| ProductFeature
