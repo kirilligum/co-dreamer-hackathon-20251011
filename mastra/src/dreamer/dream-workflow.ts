@@ -1,6 +1,7 @@
 import { createStep, createWorkflow } from '@mastra/core/workflows';
 import { z } from 'zod';
 import { LLMService } from './llm-service';
+import { VerificationService } from './verification-service';
 import { Node, Edge, CUSTOMER_JOB_ID, PRODUCT_FEATURE_ID } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -87,6 +88,7 @@ const expandGraph = createStep({
     console.log('[Step 2] Expanding graph with BFS...');
 
     const llmService = new LLMService();
+    const verificationService = new VerificationService();
     const { customer, product, children_count, generations_count_int, nodes, nodeMap } = inputData;
 
     let queue = [CUSTOMER_JOB_ID];
@@ -116,6 +118,39 @@ const expandGraph = createStep({
               content: genNode.new_node_content,
               edge: [],
             };
+
+            // Verify the node content using web search
+            console.log(`  Verifying node: ${childId}`);
+            try {
+              const verificationResult = await verificationService.verifyNode(
+                childNode.content,
+                { customer, product }
+              );
+
+              // Add verification info to the node
+              childNode.verification = {
+                verified: verificationResult.verified,
+                confidence: verificationResult.confidence,
+                summary: verificationResult.summary,
+                sources: verificationResult.sources,
+                timestamp: new Date().toISOString(),
+              };
+
+              console.log(
+                `  ${verificationResult.verified ? '✓' : '✗'} Verification: ${childId} ` +
+                `(confidence: ${(verificationResult.confidence * 100).toFixed(1)}%)`
+              );
+            } catch (error) {
+              console.error(`  Error verifying node ${childId}:`, error);
+              // Add failed verification info
+              childNode.verification = {
+                verified: false,
+                confidence: 0,
+                summary: `Verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                sources: [],
+                timestamp: new Date().toISOString(),
+              };
+            }
 
             const edge: Edge = {
               target_id: childId,

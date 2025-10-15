@@ -1,10 +1,16 @@
 # CO-DREAMER: Passively discovering and learning new knowledge.
 
+<p align="center">
+  <img src="logo.png" alt="Co-Dreamer Logo" width="400"/>
+</p>
+
 Today's AI is short-sighted and sales outreach is impersonal. Existing systems are reactive, responding only when prompted, and they struggle with the factual, multi-step reasoning needed for genuine personalization.
 
 **Co-Dreamer** tackles these problems with a novel approach: we let our AI "dream." It is an end-to-end system where an AI agent passively discovers and expands its own knowledge graph. To combat the critical issue of hallucination, every piece of self-acquired knowledge is verified against real-world sources, creating a reliable foundation for complex reasoning. This allows the agent to generate deeply personalized sales outreach that is continuously improved through a reinforcement learning loop. The entire process is managed through a unique human-in-the-loop interface where the UI state is shared directly with the LLM agent, enabling seamless, conversational control.
 
 > **Built for WeaveHacks 2025**, focusing on the **"Self-Improving Agents"** and **"Reinforcement Learning"** tracks.
+
+**📹 [Watch our pitch video](https://youtu.be/2VKj0d38TUU)**
 
 **Authors:** [Jesse Hann](https://x.com/JesseHann3) (agentic front-end) · [Kirill Igumenshchev](https://x.com/kirill_igum) (knowledge graph) · [Piero Mallozzi](https://x.com/p_mallozzi) (iterative fine-tuning)
 
