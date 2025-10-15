@@ -118,7 +118,7 @@ This project was made possible by leveraging the powerful tools provided by our 
 
 ## 🏛️ Architecture Overview
 
-Co-Dreamer is a full-stack monorepo system composed of a frontend UI, a knowledge graph generation service, and a reinforcement learning backend.
+Co-Dreamer is a full-stack system composed of a frontend UI ([codreamer-agui](https://github.com/JessieJessJe/codreamer-agui)), a knowledge graph generation service, and a reinforcement learning backend.
 
 ```mermaid
 graph TD
@@ -203,12 +203,15 @@ Co-Dreamer consists of **two separate services** that must be run concurrently: 
 - **Python 3.10+** and `uv` (or pip)
 - An **OpenAI API Key**
 
-### Step 1: Clone the Repository
+### Step 1: Clone the Repositories
 
 ```bash
-# This monorepo contains both frontend and backend services.
-git clone <your-repo-url>
+# Clone the backend (this repository)
+git clone <this-repo-url>
 cd co-dreamer
+
+# Clone the frontend repository
+git clone https://github.com/JessieJessJe/codreamer-agui
 ```
 
 ### Step 2: Set Up & Run the Backend (`codreamer`)
